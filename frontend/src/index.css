@@ -638,12 +638,24 @@ sb-task-header h3 {
   margin: 0;
 }
 
-.login-dialog {
+.account-page > div {
+  text-transform: uppercase;
+  flex: 1 0 100%;
+  text-align: center;
+}
+
+.account-page a, sb-readme a {
+  text-decoration: none;
+  color: var(--login-link-text-color);
+}
+
+.account-page .login-dialog {
   display: flex;
   flex-direction: column;
   background: var(--login-dialog-background-color);
   margin-bottom: 1em;
   flex: 0 1 100%;
+  text-align: left;
 }
 
 .login-dialog > * {
@@ -680,17 +692,6 @@ sb-task-header h3 {
 
 .login-dialog form {
   display: none;
-}
-
-.account-page > div:not(role="dialog") {
-  text-transform: uppercase;
-  flex: 1 0 100%;
-  text-align: center;
-}
-
-.account-page a, sb-readme a {
-  text-decoration: none;
-  color: var(--login-link-text-color);
 }
 
 .content#teams {
