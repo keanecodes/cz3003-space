@@ -5,7 +5,7 @@ export default function GameWorldStation() {
     // <div>
     // <sb-content role="main" id="challenges">
     <div className="sb-categoryList">
-      <sb-category data-id="The Deck" data-sb="true" data-type="sb-category" className=" sb-table" data-unsorted="true">
+      <div className="sb-category sb-table" data-id="The Deck" data-sb="true" data-type="sb-category" data-unsorted="true">
           <h2><sb-var data-var="id">Use cases</sb-var></h2>
           <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-solved="true" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border">
             <sb-task-details role="button">
@@ -46,7 +46,7 @@ export default function GameWorldStation() {
               <h4><sb-var data-var="name">Next Chapter</sb-var></h4>
             </sb-task-details>
           </div>
-      </sb-category>
+      </div>
     </div>
       // </sb-content>
     // </div>
