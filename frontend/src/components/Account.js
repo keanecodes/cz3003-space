@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { contentState } from '../recoil/atoms';
@@ -9,6 +9,7 @@ export default function Account({view, history}) {
   const formValues = useRecoilValue(formValuesState)
   const setUserAuth = useSetRecoilState(userAuth)
   const setPageContent = useSetRecoilState(contentState)
+  const [error, setErrorUI] = useState(false)
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -47,12 +48,13 @@ export default function Account({view, history}) {
       //   isVisible: true
       // })
       console.error(error)
+      setErrorUI(true)
     }
   };
 
   return (
     <div className="content account-page" id="login">
-      <div className="login-dialog glow-border" role="dialog" data-submit="joinTeam">
+      <div className="login-dialog glow-border" role="dialog" data-submit="joinTeam" data-account-error={error}>
         {view == "login" 
           ? <h3 className="dashed">Sign In</h3>
           : view == "register" 
@@ -90,17 +92,5 @@ const Input = ({label, type, tips}) => {
       <input value={formValues[`${label}`]} className="glow-border" type={type} form="login-form" onChange={handleChange}/>
       {tips == true ? <span>If you don't have a team key, you can create a new team.</span> : null}
     </label>
-  )
-}
-
-const CheckBox = () => {
-  return (
-    <label className="sb-email-consent" data-click="logEmail">
-      <input type="checkbox"/>
-      <span>
-        By joining this team, you agree to follow the <a href="/rules.pdf" target="_blank">
-        rules of the Google CTF 2018</a>. Note you can only join one team.
-      </span>
-    </label> 
   )
 }

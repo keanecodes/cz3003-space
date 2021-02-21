@@ -4,6 +4,6 @@ export const PLAYER_HEIGHT = 50;
 export const PLAYER_WIDTH = 37;
 export const PLAYER_START_X = 330;
 export const PLAYER_START_Y = 100;
-export const PLAYER_SPEED = 3;
+export const PLAYER_SPEED = 5;
 export const SHIP_WIDTH = 2160;
 export const SHIP_HEIGHT = 1166;
