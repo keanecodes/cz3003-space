@@ -24,7 +24,6 @@
  *
  * And that's it! Good luck :]
  **********************************************************************/
-
 const admin = require("firebase-admin");
 const serviceAccount = require("./firebase-adminsdk.json");
 const { databaseURL, storageBucket } = require('./config')

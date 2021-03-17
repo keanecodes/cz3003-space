@@ -16,6 +16,7 @@ export default function Account({view, history}) {
     try {
       if (view == "login" || view == "register") {
         // server call
+        console.log(formValues);
         const { data } = await authorise(`/${view}`,formValues) 
         
         // show notification
