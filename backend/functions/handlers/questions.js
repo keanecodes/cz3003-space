@@ -68,3 +68,32 @@ exports.getQuestions = (req, res) => {
 
 }
 
+exports.createSubtopic = (req, res) => {
+
+  const {subtopic, topic} = req.body
+  console.log(req);
+
+
+  db.collection('questions')
+    .doc(topic)
+    .collection(subtopic)
+    .set({});
+  
+  return res.status(200).json( {message: "Subtopic created"} );
+
+}
+
+exports.createQuestion = (req, res) => {
+    
+  const {question, 
+        correct_answer, 
+        incorrect_answer1, 
+        incorrect_answer2, 
+        incorrect_answer3, 
+        subtopic,
+        difficulty} = req.body;
+
+    console.log(req);
+
+}
+
