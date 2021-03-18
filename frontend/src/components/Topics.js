@@ -11,10 +11,12 @@ export default function Topics() {
   const [subtopic, setSubtopic] = useState('')
   const [isTopic, setIsTopic] = useState(false);
   const handleShowForm = () => setOverlay(!showForm)
+  const [reload, setReload] = useState(false)
 
 
   useEffect( async () => {
 
+    setReload(false)
     const results = await getTopics();
 
     if (currentIndex < results.length){
@@ -32,7 +34,7 @@ export default function Topics() {
 
       setCurrentIndex(currentIndex+1);
     }
-  }, [currentIndex]);
+  }, [currentIndex, reload]);
 
   const getTopics = async () => {
     const res = await axios.get("/topics")
@@ -114,7 +116,7 @@ export default function Topics() {
           ))}
         </sb-categorylist>
         <div>
-          { showForm ? <Form handleShowForm={handleShowForm} isTopic={isTopic} topic={topic} subtopic={subtopic} /> : null } 
+          { showForm ? <Form handleShowForm={handleShowForm} isTopic={isTopic} topic={topic} subtopic={subtopic} setReload={setReload} /> : null } 
           </div>
       </div>
   )
