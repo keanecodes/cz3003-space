@@ -16,7 +16,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
                     console.log(data);
                 })
         :
-        axios.post("/create/question",{ ...formValues, subtopic })
+        axios.post("/create/question",{ ...formValues, topic, subtopic })
                 .then(data => {
                     console.log(data);
                 });        
@@ -30,13 +30,13 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
             <div className="game-header-title">
                 { isTopic? (
                     <div>
-                        <h2>Create New Subtopics</h2>
+                        <h2>Create New Subtopic</h2>
                         <h4>{topic}</h4>
                     </div>
 
                 ):(
                     <div>
-                         <h2>Create New Questions</h2>
+                         <h2>Create New Question</h2>
                         <h4>{subtopic}</h4>
                     </div>
                 )}
@@ -48,10 +48,10 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
                     ):
                 <div>
                     <Input label="question" type="question" formValues={formValues} setFormValues={setFormValues} />
-                    <Input label="correct answer" type="correct answer" formValues={formValues} setFormValues={setFormValues} />
-                    <Input label="incorrect answer1" type="incorrect answer1" formValues={formValues} setFormValues={setFormValues} />
-                    <Input label="incorrect answer2" type="incorrect answer2" formValues={formValues} setFormValues={setFormValues} />
-                    <Input label="incorrect answer3" type="incorrect answer3" formValues={formValues} setFormValues={setFormValues} />
+                    <Input label="correct_answer" type="correct_answer" formValues={formValues} setFormValues={setFormValues} />
+                    <Input label="incorrect_answer1" type="incorrect_answer1" formValues={formValues} setFormValues={setFormValues} />
+                    <Input label="incorrect_answer2" type="incorrect_answer2" formValues={formValues} setFormValues={setFormValues} />
+                    <Input label="incorrect_answer3" type="incorrect_answer3" formValues={formValues} setFormValues={setFormValues} />
                     <Input label="difficulty" type="difficulty" formValues={formValues} setFormValues={setFormValues} />
                 </div>
                 }
