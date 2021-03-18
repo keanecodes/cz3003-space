@@ -52,7 +52,6 @@ exports.getQuestions = (req, res) => {
     db.collection('questions')
     .doc(topic)
     .collection(subtopic)
-    .where("difficulty","==", level)
     .get()
     .then((snapshot) => {
       snapshot.forEach((doc) => {
@@ -71,15 +70,20 @@ exports.getQuestions = (req, res) => {
 exports.createSubtopic = (req, res) => {
 
   const {subtopic, topic} = req.body
-  console.log(req);
+  console.log(subtopic+" "+topic);
 
 
   db.collection('questions')
     .doc(topic)
     .collection(subtopic)
-    .set({});
+    .add({})
+    .then((data) => {
+      console.log(data.id);
+      return res.status(200).json( {message: "Subtopic created"} );
+    }).catch((err) => {
+        console.log(err)
+    });
   
-  return res.status(200).json( {message: "Subtopic created"} );
 
 }
 
@@ -89,11 +93,29 @@ exports.createQuestion = (req, res) => {
         correct_answer, 
         incorrect_answer1, 
         incorrect_answer2, 
-        incorrect_answer3, 
+        incorrect_answer3,
+        topic,
         subtopic,
         difficulty} = req.body;
 
-    console.log(req);
+    console.log(req.body);
+
+
+    db.collection('questions')
+    .doc(topic)
+    .collection(subtopic)
+    .add({
+      question: question,
+      correct_answer: correct_answer,
+      incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3], 
+      difficulty: difficulty
+    })
+    .then((data) => {
+      console.log(data.id);
+      return res.status(200).json( {message: "Question created"} );
+    }).catch((err) => {
+        console.log(err)
+    });
 
 }
 

@@ -77,8 +77,9 @@ export default function Topics() {
 
   }
 
-  const handleSubtopic = (subtopic) => {
+  const handleSubtopic = (topic, subtopic) => {
 
+    setTopic(topic);
     setSubtopic(subtopic);
     setIsTopic(false);
     handleShowForm();
@@ -92,51 +93,23 @@ export default function Topics() {
           {topics.map((e, index) => ( 
               <div className="sb-category sb-table" data-id="keys" data-sb="true" data-type="sb-category" data-unsorted="true">
               <h2 onClick = {() => handleTopic(e.topic)} ><sb-var data-var="id">{e.topic}</sb-var></h2>
-              <div className="sb-task glow-border" data-id="crypto-auth" data-sb="true" data-type="sb-task" data-points="100" data-solves="9" data-teams="!SpamAndHex, 5BC, DEFKOR00T" data-solved="false" data-name="Large graph factorization"  data-label="crypto, math" data-link="" data-host="auth.ctfcompetition.com 1337" data-attachment="" data-click="setTaskActive/true" data-submit="submitFlag" data-unsorted="true" data-active="false"
-                onClick = {() => handleSubtopic(e.subtopics[0])} >
-                <sb-task-details role="button">
-                  <h4><sb-var data-var="name">{e.subtopics[0]}</sb-var></h4>
-                  <sb-meta>
-                    <sb-var data-var="label">crypto, math</sb-var>
-                  </sb-meta>
-                </sb-task-details>
-                <sb-task-stats>
-                  <h3><sb-var data-var="points">50</sb-var>pt</h3>
-                  <sb-meta>
-                    <sb-var data-var="solves">9</sb-var> solves
-                  </sb-meta>
-                </sb-task-stats>
-              </div>
-              <div className="sb-task glow-border" data-id="crypto-auth" data-sb="true" data-type="sb-task" data-points="100" data-solves="9" data-teams="!SpamAndHex, 5BC, DEFKOR00T" data-solved="false" data-name="Large graph factorization"  data-label="crypto, math" data-link="" data-host="auth.ctfcompetition.com 1337" data-attachment="" data-click="setTaskActive/true" data-submit="submitFlag" data-unsorted="true" data-active="false"
-               onClick = {() => handleSubtopic(e.subtopics[1])} >
-                <sb-task-details role="button">
-                  <h4><sb-var data-var="name">{e.subtopics[1]}</sb-var></h4>
-                  <sb-meta>
-                    <sb-var data-var="label">crypto, math</sb-var>
-                  </sb-meta>
-                </sb-task-details>
-                <sb-task-stats>
-                  <h3><sb-var data-var="points">100</sb-var>pt</h3>
-                  <sb-meta>
-                    <sb-var data-var="solves">9</sb-var> solves
-                  </sb-meta>
-                </sb-task-stats>
-              </div>
-              <div className="sb-task glow-border" data-id="crypto-auth" data-sb="true" data-type="sb-task" data-points="100" data-solves="9" data-teams="!SpamAndHex, 5BC, DEFKOR00T" data-solved="false" data-name="Large graph factorization"  data-label="crypto, math" data-link="" data-host="auth.ctfcompetition.com 1337" data-attachment="" data-click="setTaskActive/true" data-submit="submitFlag" data-unsorted="true" data-active="false"
-               onClick = {() => handleSubtopic(e.subtopics[2])}>
-                <sb-task-details role="button">
-                  <h4><sb-var data-var="name">{e.subtopics[2]}</sb-var></h4>
-                  <sb-meta>
-                    <sb-var data-var="label">crypto, math</sb-var>
-                  </sb-meta>
-                </sb-task-details>
-                <sb-task-stats>
-                  <h3><sb-var data-var="points">150</sb-var>pt</h3>
-                  <sb-meta>
-                    <sb-var data-var="solves">9</sb-var> solves
-                  </sb-meta>
-                </sb-task-stats>
-              </div>
+              {e.subtopics.map((subtopic) => (
+                  <div className="sb-task glow-border" data-id="crypto-auth" data-sb="true" data-type="sb-task" data-points="100" data-solves="9" data-teams="!SpamAndHex, 5BC, DEFKOR00T" data-solved="false" data-name="Large graph factorization"  data-label="crypto, math" data-link="" data-host="auth.ctfcompetition.com 1337" data-attachment="" data-click="setTaskActive/true" data-submit="submitFlag" data-unsorted="true" data-active="false"
+                  onClick = {() => handleSubtopic(e.topic, subtopic)} >
+                  <sb-task-details role="button">
+                    <h4><sb-var data-var="name">{subtopic}</sb-var></h4>
+                    <sb-meta>
+                      <sb-var data-var="label">crypto, math</sb-var>
+                    </sb-meta>
+                  </sb-task-details>
+                  <sb-task-stats>
+                    <h3><sb-var data-var="points">50</sb-var>pt</h3>
+                    <sb-meta>
+                      <sb-var data-var="solves">9</sb-var> solves
+                    </sb-meta>
+                  </sb-task-stats>
+                </div>
+              ))}
             </div>
           ))}
         </sb-categorylist>
