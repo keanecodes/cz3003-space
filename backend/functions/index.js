@@ -16,7 +16,9 @@ const {
 const {
   getTopics,
   getSubtopics,
-  getQuestions
+  getQuestions,
+  createSubtopic,
+  createQuestion
 } = require("./handlers/questions");
 
 // Users route
@@ -29,6 +31,9 @@ app.get('/user', authMiddleware, getAuthenticatedUser);
 app.get('/topics', getTopics);
 app.get('/subtopics', getSubtopics);
 app.get('/questions', getQuestions);
+app.post('/create/subtopic', createSubtopic);
+app.post('/create/question', createQuestion);
+
 
 
 // exports.getDonations = functions.https.onRequest((req, res) => { });
