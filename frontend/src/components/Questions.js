@@ -33,7 +33,8 @@ const Questions = ({handleShowQuestions, topic, subtopic, level, progress, setPr
       if(gameEnded === true)
       { 
         if(score === questions.length) {
-          setProgress(progress+1);
+          console.log(subtopic);
+          setProgress(progress.concat(subtopic));
           console.log(progress);
         }
       }

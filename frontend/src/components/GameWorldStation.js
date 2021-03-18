@@ -15,8 +15,11 @@ export default function GameWorldStation() {
   const [subtopic, setSubtopic] = useState('')
   const [difficulty, setDifficulty] = useState('')
 
-  const [progress, setProgress] = useState(0)
+  const [progress, setProgress] = useState([])
   const handleShowQuestions = () => setOptionsOverlay(!showQuestions)
+
+  let points = [50, 100, 150];
+  let level = ['easy', 'medium', 'hard'];
 
   useEffect( async () => {
       const results = await getTopics();
@@ -60,7 +63,7 @@ export default function GameWorldStation() {
     return items;
   }
 
-  const handleDifficulty = (topic, subtopic, level) => {
+  const handleQuestions = (topic, subtopic, level) => {
     setTopic(topic);
     setSubtopic(subtopic);
     setDifficulty(level);
@@ -72,15 +75,18 @@ export default function GameWorldStation() {
 
     console.log(progress+" "+subtopics.length)
 
-    if(progress >= subtopics.length) {
-      setProgress(0);
-      setCurrentIndex(newIndex);
-    }
-
     if(newIndex >= topics.length) {
+      return;
       setCurrentIndex(newIndex-1);
         //setGameEnded(true);
     }
+
+    if(progress.length >= subtopics.length) {
+      setProgress([]);
+      setCurrentIndex(newIndex);
+    }
+
+    
   }
 
 
@@ -90,43 +96,40 @@ export default function GameWorldStation() {
     <div className="sb-categoryList">
       <div className="sb-category sb-table" data-id="The Deck" data-sb="true" data-type="sb-category" data-unsorted="true">
           <h2><sb-var data-var="id">{topics[currentIndex]}</sb-var></h2>
-          <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-solved="true" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border"
-            onClick={() => handleDifficulty(topics[currentIndex], subtopics[0], 'easy')} >
-            <sb-task-details role="button">
-              <h4><sb-var data-var="name">{subtopics[0]}</sb-var></h4>
-              <sb-meta>
-                <sb-var data-var="label">easy</sb-var>
-              </sb-meta>
-            </sb-task-details>
-            <sb-task-stats>
-              <h3><sb-var data-var="points">50</sb-var>pt</h3>
-              
-            </sb-task-stats>
-          </div>
-          <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" 
-            onClick={() => handleDifficulty(topics[currentIndex], subtopics[1], 'medium')} >
-            <sb-task-details role="button">
-              <h4><sb-var data-var="name">{subtopics[1]}</sb-var></h4>
-              <sb-meta>
-                <sb-var data-var="label">medium</sb-var>
-              </sb-meta>
-            </sb-task-details>
-            <sb-task-stats>
-              <h3><sb-var data-var="points">100</sb-var>pt</h3>
-            </sb-task-stats>
-          </div>
-          <div style={{opacity: 0.5}} data-id="misc-magic" data-sb="true" data-type="sb-task" className="sb-task glow-border" data-unsorted="true" data-active="false"
-           onClick={() => handleDifficulty(topics[currentIndex], subtopics[2], 'hard')} >
-            <sb-task-details role="button">
-              <h4><sb-var data-var="name">{subtopics[2]}</sb-var></h4>
-              <sb-meta>
-                <sb-var data-var="label">hard</sb-var>
-              </sb-meta>
-            </sb-task-details>
-            <sb-task-stats>
-              <h3><sb-var data-var="points">150</sb-var>pt</h3>
-            </sb-task-stats>
-          </div>
+          {
+            subtopics.map((stopic, index) => (
+              progress.find((e) => e === stopic ) ? 
+              (
+                <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-solved="true" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border">
+                  <sb-task-details role="button">
+                    <h4><sb-var data-var="name">{stopic}</sb-var></h4>
+                    <sb-meta>
+                      <sb-var data-var="label">{level[index]}</sb-var>
+                    </sb-meta>
+                  </sb-task-details>
+                  <sb-task-stats>
+                    <h3>Completed</h3>
+                  </sb-task-stats>
+                </div>
+              ): 
+              (
+                <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" 
+                  onClick={() => handleQuestions(topics[currentIndex], stopic, level[index])} >
+                  <sb-task-details role="button">
+                    <h4><sb-var data-var="name">{stopic}</sb-var></h4>
+                    <sb-meta>
+                      <sb-var data-var="label">{level[index]}</sb-var>
+                    </sb-meta>
+                  </sb-task-details>
+                  <sb-task-stats>
+                    <h3><sb-var data-var="points">{points[index]}</sb-var>pt</h3>
+                  </sb-task-stats>
+                </div>
+              )
+            )
+          )
+          }
+         
           <div disabled style={{textAlign: "center", boxShadow: "0 0 var(--glow-border-blur) var(--glow-border-width) grey, inset 0 0 var(--glow-border-blur) var(--glow-border-width) grey", border: "var(--glow-border-width) solid grey", color: "grey", backgroundColor: "grey", opacity: 0.5}} data-id="misc-magic" data-sb="true" data-type="sb-task" className="sb-task glow-border" data-unsorted="true" data-active="false"
           onClick={handleNextChapter}>
             <sb-task-details role="button" style={{alignItems: "center"}}>
