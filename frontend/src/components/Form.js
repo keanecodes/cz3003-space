@@ -19,7 +19,10 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
         axios.post("/create/question",{ ...formValues, topic, subtopic })
                 .then(data => {
                     console.log(data);
-                });        
+                });  
+        
+        setFormValues([]);
+        setReload(true);  
     }
   
       
@@ -43,9 +46,10 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
               
             </div>
           </div>
-                { isTopic? (
+                { isTopic && 
+                (
                     <Input label="subtopic" type="subtopic" formValues={formValues} setFormValues={setFormValues} />
-                    ):
+                )}
                 <div>
                     <Input label="question" type="question" formValues={formValues} setFormValues={setFormValues} />
                     <Input label="correct_answer" type="correct_answer" formValues={formValues} setFormValues={setFormValues} />
@@ -54,7 +58,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
                     <Input label="incorrect_answer3" type="incorrect_answer3" formValues={formValues} setFormValues={setFormValues} />
                     <Input label="difficulty" type="difficulty" formValues={formValues} setFormValues={setFormValues} />
                 </div>
-                }
+            
 
                 <input className="glow-border" form="form" type="submit" value="Submit" />
                 <form id="form" onSubmit={handleSubmit}></form>          

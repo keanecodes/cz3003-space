@@ -69,14 +69,26 @@ exports.getQuestions = (req, res) => {
 
 exports.createSubtopic = (req, res) => {
 
-  const {subtopic, topic} = req.body
+  const {question, 
+          correct_answer, 
+          incorrect_answer1, 
+          incorrect_answer2, 
+          incorrect_answer3,
+          topic,
+          subtopic,
+          difficulty} = req.body;
   console.log(subtopic+" "+topic);
 
 
   db.collection('questions')
     .doc(topic)
     .collection(subtopic)
-    .add({})
+    .add({
+      question: question,
+      correct_answer: correct_answer,
+      incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3], 
+      difficulty: difficulty
+    })
     .then((data) => {
       console.log(data.id);
       return res.status(200).json( {message: "Subtopic created"} );
