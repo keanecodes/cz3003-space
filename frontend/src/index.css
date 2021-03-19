@@ -1261,4 +1261,13 @@ sb-update[data-title=""][data-content=""] {
 template {
   display: none!important;
 }
+.topics-display{
+  /*display: flex;*/
+  /*flex-wrap: wrap;*/
+  /*justify-content: space-evenly;*/
+  padding: 8%;
 
+}
+.topic{
+  padding: 5%;
+}
