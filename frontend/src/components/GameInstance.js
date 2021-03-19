@@ -1,8 +1,8 @@
-import React, {useEffect} from 'react'
-import Phaser from 'phaser'
-import MyGame from '../phaser/scene'
+import React, { useEffect } from "react";
+import Phaser from "phaser";
+import MyGame from "../phaser/scene";
 
-export default function GameInstance({setGame, game, auth}) {
+export default function GameInstance({ setGame, game, auth }) {
   useEffect(() => {
     if (game == null) {
       var instance = new Phaser.Game({
@@ -11,17 +11,19 @@ export default function GameInstance({setGame, game, auth}) {
         width: 800,
         height: 600,
         scene: MyGame,
-        callbacks: {
-          postBoot: function(game) {
-            setGame(game)
-          }
+        physics: {
+          default: "arcade",
+          gravity: { y: 0 },
         },
-      })
+        callbacks: {
+          postBoot: function (game) {
+            setGame(game);
+          },
+        },
+      });
       if (auth.isAuthenticated) instance.config.user = auth.user.bio;
     }
-  }, [])
-  
-  
+  }, []);
 
   if (module.hot) {
     module.hot.accept(() => {});
@@ -31,7 +33,5 @@ export default function GameInstance({setGame, game, auth}) {
     });
   }
 
-  return (
-    <></>
-  )
+  return <></>;
 }
