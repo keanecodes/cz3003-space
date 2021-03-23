@@ -27,10 +27,10 @@ class MyGame extends Phaser.Scene {
       firebase.initializeApp(firebaseConfig);
     } 
     this.database = firebase.database();
-    // this.roomNumber = Math.random().toString().split('.')[1];
+    this.roomNumber = Math.random().toString().split('.')[1];
     this.playerId = Math.random().toString().split('.')[1];
     this.playerName = "";
-    // this.roomAddress = "";
+    this.roomAddress = "";
     this.previousX = 0;
     this.previousY = 0;
     this.updatePlayerPositions.bind(this.updatePlayerPositions);
@@ -80,11 +80,11 @@ class MyGame extends Phaser.Scene {
       pressedKeys = pressedKeys.filter((key) => key !== e.code);
     });
 
-    // this.roomAddress = 'rooms/' + this.roomNumber + '/players/';
+    this.roomAddress = 'rooms/' + this.roomNumber + '/players/';
 
-    var thisPlayerRef = firebase.database().ref('players/' + this.playerId);
+    var thisPlayerRef = firebase.database().ref(this.roomAddress + this.playerId);
     thisPlayerRef.onDisconnect().set({});
-    var playersRef = firebase.database().ref('players/');
+    var playersRef = firebase.database().ref(this.roomAddress);
     playersRef.on('value', (snapshot) => {
       this.updatePlayerPositions(snapshot.val());
     });
@@ -134,7 +134,7 @@ class MyGame extends Phaser.Scene {
     animateMovement(pressedKeys, player.sprite.list[0]);
 
     if (Math.round(player.sprite.x) != this.previousX || Math.round(player.sprite.y) != this.previousY) {
-      firebase.database().ref('players/' + this.playerId).set({
+      firebase.database().ref(this.roomAddress + this.playerId).set({
         playerId: this.playerId, 
         playerName: this.playerName,
         x: Math.round(player.sprite.x), 
@@ -143,7 +143,7 @@ class MyGame extends Phaser.Scene {
         moving: true
       });
     } else {
-      firebase.database().ref('players/' + this.playerId).update({ moving: false})
+      firebase.database().ref(this.roomAddress + this.playerId).update({ moving: false})
     }
 
     this.previousX = Math.round(player.sprite.x);
