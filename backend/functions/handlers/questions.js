@@ -1,7 +1,6 @@
 const { db } = require('../util/admin');
 
 exports.getTopics = (req, res) => {
-
   const data = [];
   db.collection('questions')
   .get()
@@ -20,7 +19,6 @@ exports.getTopics = (req, res) => {
 }
 
 exports.getSubtopics = (req, res) => {
-
   console.log(req.query[0]);
   const topic = req.query[0];
 
@@ -45,9 +43,7 @@ exports.getSubtopics = (req, res) => {
 }
 
 exports.getQuestions = (req, res) => {
-    
-    const {topic, subtopic, level} = req.query;
-
+    const {topic, subtopic} = req.query;
     const data = [];
     db.collection('questions')
     .doc(topic)
@@ -64,7 +60,6 @@ exports.getQuestions = (req, res) => {
       console.log(data);
       return res.status(200).json(data);
     });
-
 }
 
 exports.createSubtopic = (req, res) => {
@@ -77,8 +72,8 @@ exports.createSubtopic = (req, res) => {
           topic,
           subtopic,
           difficulty} = req.body;
-  console.log(subtopic+" "+topic);
 
+  console.log(subtopic+" "+topic);
 
   db.collection('questions')
     .doc(topic)
@@ -100,18 +95,24 @@ exports.createSubtopic = (req, res) => {
 }
 
 exports.createQuestion = (req, res) => {
-    
-  const {question, 
-        correct_answer, 
-        incorrect_answer1, 
-        incorrect_answer2, 
-        incorrect_answer3,
-        topic,
-        subtopic,
-        difficulty} = req.body;
+    let question = req.query.question
+    let correct_answer = req.query.correct_answer
+    let incorrect_answer1 = req.query.incorrect_answer1
+    let incorrect_answer2 = req.query.incorrect_answer2
+    let incorrect_answer3 = req.query.incorrect_answer3
+    let topic = req.query.topic
+    let subtopic = req.query.subtopic
+    let difficulty = req.query.difficulty
+  // const {question,
+  //       correct_answer,
+  //       incorrect_answer1,
+  //       incorrect_answer2,
+  //       incorrect_answer3,
+  //       topic,
+  //       subtopic,
+  //       difficulty} = req.body;
 
     console.log(req.body);
-
 
     db.collection('questions')
     .doc(topic)
@@ -130,4 +131,3 @@ exports.createQuestion = (req, res) => {
     });
 
 }
-
