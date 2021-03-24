@@ -43,6 +43,7 @@ exports.getSubtopics = (req, res) => {
 }
 
 exports.getQuestions = (req, res) => {
+    console.log('i have been called')
     const {topic, subtopic} = req.query;
     const data = [];
     db.collection('questions')
@@ -54,16 +55,22 @@ exports.getQuestions = (req, res) => {
         if (!doc.exists) {
           return res.status(400).json({ message:'No questions available' });
         } else {
-          data.push(doc._fieldsProto);
+            if (!doc.data().question){
+                console.log(doc.data())
+            }
+            else{
+                // add question to array of questions
+                data.push(doc._fieldsProto);
+            }
+
         }
       });
-      console.log(data);
+        console.log(data)
       return res.status(200).json(data);
     });
 }
 
 exports.createSubtopic = (req, res) => {
-
   const {question, 
           correct_answer, 
           incorrect_answer1, 
@@ -95,24 +102,17 @@ exports.createSubtopic = (req, res) => {
 }
 
 exports.createQuestion = (req, res) => {
-    let question = req.query.question
-    let correct_answer = req.query.correct_answer
-    let incorrect_answer1 = req.query.incorrect_answer1
-    let incorrect_answer2 = req.query.incorrect_answer2
-    let incorrect_answer3 = req.query.incorrect_answer3
-    let topic = req.query.topic
-    let subtopic = req.query.subtopic
-    let difficulty = req.query.difficulty
-  // const {question,
-  //       correct_answer,
-  //       incorrect_answer1,
-  //       incorrect_answer2,
-  //       incorrect_answer3,
-  //       topic,
-  //       subtopic,
-  //       difficulty} = req.body;
+  const {question,
+        correct_answer,
+        incorrect_answer1,
+        incorrect_answer2,
+        incorrect_answer3,
+        topic,
+        subtopic,
+        difficulty} = req.body;
 
     console.log(req.body);
+    console.log(question);
 
     db.collection('questions')
     .doc(topic)
@@ -120,7 +120,7 @@ exports.createQuestion = (req, res) => {
     .add({
       question: question,
       correct_answer: correct_answer,
-      incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3], 
+      incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3],
       difficulty: difficulty
     })
     .then((data) => {
@@ -129,5 +129,40 @@ exports.createQuestion = (req, res) => {
     }).catch((err) => {
         console.log(err)
     });
+
+}
+
+exports.editQuestion = (req, res) => {
+    const {question,
+        newQuestion,
+        correct_answer,
+        incorrect_answer1,
+        incorrect_answer2,
+        incorrect_answer3,
+        topic,
+        subtopic,
+        difficulty} = req.body;
+
+    let collectionRef = db.collection('questions').doc(topic).collection(subtopic);
+    collectionRef
+    .where('question', '==', question).get()
+    .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+            collectionRef.doc(doc.id).update({
+                question: newQuestion,
+                correct_answer: correct_answer,
+                incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3],
+                difficulty: difficulty
+            })
+                .then((data) => {
+                    return res.status(200).json( {message: "Question edited"} );
+                }).catch((err) => {
+                console.log(err)
+            });
+        })
+    }
+
+    )
+    return res.status(200)
 
 }

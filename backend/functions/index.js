@@ -18,7 +18,8 @@ const {
   getSubtopics,
   getQuestions,
   createSubtopic,
-  createQuestion
+  createQuestion,
+  editQuestion
 } = require("./handlers/questions");
 
 // Users route
@@ -33,6 +34,7 @@ app.get('/subtopics', getSubtopics);
 app.get('/questions', getQuestions);
 app.post('/create/subtopic', createSubtopic);
 app.post('/create/question', createQuestion);
+app.post('/edit/question', editQuestion)
 
 
 
