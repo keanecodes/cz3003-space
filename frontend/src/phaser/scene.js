@@ -33,6 +33,7 @@ class MyGame extends Phaser.Scene {
     this.playerId = Math.random().toString().split('.')[1];
     this.playerName = "";
     this.roomAddress = "";
+    this.sprite = "pWHT";
     this.previousX = 0;
     this.previousY = 0;
     this.updatePlayerPositions.bind(this.updatePlayerPositions);
@@ -53,7 +54,6 @@ class MyGame extends Phaser.Scene {
       this.playerName = this.game.config.user.displayName;
       this.playerSpriteColor = this.game.config.user.sprite;
       // console.log(this.playerSprite)
-      this.roomNumber = this.game.config.user.roomNum
     }
   }
 
