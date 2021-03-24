@@ -111,9 +111,6 @@ exports.createQuestion = (req, res) => {
         subtopic,
         difficulty} = req.body;
 
-    console.log(req.body);
-    console.log(question);
-
     db.collection('questions')
     .doc(topic)
     .collection(subtopic)
