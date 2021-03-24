@@ -43,7 +43,22 @@ export default function Leaderboard() {
         <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
           <div className="sb-table-head">
             <h2>Players</h2>
-            <div className="dashed sb-spacer"></div>
+            <div className="dashed sb-spacer">
+
+              {/* <sb-task-details role="button">
+                  <h2><sb-var data-var="name">Spaceship</sb-var></h2>
+                  <h4>Topic</h4>
+                </sb-task-details> */}
+              {/* <div className="sb-task-dialog-container">
+                <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
+                  <div className="sb-task-header dashed" data-click onClick={handleShowOpt}>
+                    <h3>Topics</h3>
+                    <h3>Subtopics</h3>
+                  </div>
+                  
+                </div>
+              </div> */}
+            </div>
             <h3>Ranking</h3>
           </div>
           <div className="sb-table-head">
