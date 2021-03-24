@@ -240,7 +240,7 @@ export default function Topics() {
                         if (question.question){
                           return (
                               <p>
-                                {question.question.stringValue.toString()}
+                                {question.question}
                                 <br/>
                               </p>
                           )
