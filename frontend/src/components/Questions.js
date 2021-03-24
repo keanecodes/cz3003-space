@@ -3,7 +3,7 @@ import Questionare from './Questionare';
 import axios from 'axios'
 
 
-const Questions = ({handleShowQuestions, topic, subtopic, level, progress, setProgress}) => {
+const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress, setProgress, setRender}) => {
 
     // const dispatch = useDispatch();
     const [questions, setQuestions] = useState([]);
@@ -35,6 +35,11 @@ const Questions = ({handleShowQuestions, topic, subtopic, level, progress, setPr
         if(score === questions.length) {
           console.log(subtopic);
           setProgress(progress.concat(subtopic));
+          let id = auth.user.bio.userId;
+          axios.post("/score",{ params: { id, score, progress } });
+          
+          setRender(true);
+          console.log(auth.user.bio.userId);
           console.log(progress);
         }
       }

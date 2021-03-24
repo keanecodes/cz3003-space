@@ -46,7 +46,7 @@ exports.getSubtopics = (req, res) => {
 
 exports.getQuestions = (req, res) => {
     
-    const {topic, subtopic, level} = req.query;
+    const {topic, subtopic} = req.query;
 
     const data = [];
     db.collection('questions')
@@ -58,13 +58,46 @@ exports.getQuestions = (req, res) => {
         if (!doc.exists) {
           return res.status(400).json({ message:'No questions available' });
         } else {
-          data.push(doc._fieldsProto);
+
+          if(doc.data().question)
+            data.push(doc._fieldsProto);
+          
         }
       });
       console.log(data);
       return res.status(200).json(data);
     });
 
+}
+
+exports.getSubtopicsDifficulty = (req, res) => {
+    
+  const {topic, subtopics} = req.query;
+  // console.log(req);
+
+  let data = [];
+  subtopics.forEach((subtopic) => {
+    db.collection('questions')
+    .doc(topic)
+    .collection(subtopic)
+    .doc('difficulty')
+    .get()
+    .then((doc) => {
+      
+        if (!doc.exists) {
+          return res.status(400).json({ message:'No questions available' });
+        } else {
+            console.log(doc._fieldsProto.value.stringValue)
+            console.log(data)
+            data.push(doc._fieldsProto.value.stringValue);
+        }
+    });
+  });
+
+  console.log(data)
+  
+  
+  
 }
 
 exports.createSubtopic = (req, res) => {
