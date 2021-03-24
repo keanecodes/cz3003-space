@@ -103,7 +103,6 @@ exports.getSubtopicsDifficulty = (req, res) => {
 }
 
 exports.createSubtopic = (req, res) => {
-
   const {question, 
           correct_answer, 
           incorrect_answer1, 
@@ -145,15 +144,13 @@ exports.createQuestion = (req, res) => {
         subtopic,
         difficulty} = req.body;
 
-    console.log(req.body);
-
     db.collection('questions')
     .doc(topic)
     .collection(subtopic)
     .add({
       question: question,
       correct_answer: correct_answer,
-      incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3], 
+      incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3],
       difficulty: difficulty
     })
     .then((data) => {
@@ -162,5 +159,40 @@ exports.createQuestion = (req, res) => {
     }).catch((err) => {
         console.log(err)
     });
+
+}
+
+exports.editQuestion = (req, res) => {
+    const {question,
+        newQuestion,
+        correct_answer,
+        incorrect_answer1,
+        incorrect_answer2,
+        incorrect_answer3,
+        topic,
+        subtopic,
+        difficulty} = req.body;
+
+    let collectionRef = db.collection('questions').doc(topic).collection(subtopic);
+    collectionRef
+    .where('question', '==', question).get()
+    .then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+            collectionRef.doc(doc.id).update({
+                question: newQuestion,
+                correct_answer: correct_answer,
+                incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3],
+                difficulty: difficulty
+            })
+                .then((data) => {
+                    return res.status(200).json( {message: "Question edited"} );
+                }).catch((err) => {
+                console.log(err)
+            });
+        })
+    }
+
+    )
+    return res.status(200)
 
 }

@@ -9,24 +9,26 @@ import { RecoilRoot } from "recoil";
 
 import './index.css';
 import Container from "./components/Container";
+import Topics from "./components/Topics";
 // import reportWebVitals from './reportWebVitals';
 
 const hist = createBrowserHistory()
 
 ReactDOM.render(
-  <RecoilRoot>
-    <Router history={hist}>
-      <Switch>
-        <Route
-          path="/"
-          render={props => {
-            return <Container {...props}/>;
-          }}
-        />
-      </Switch>
-      <Route render={() => <Redirect to="/" />} />
-    </Router>
-  </RecoilRoot>
+  // <RecoilRoot>
+  //   <Router history={hist}>
+  //     <Switch>
+  //       <Route
+  //         path="/"
+  //         render={props => {
+  //           return <Container {...props}/>;
+  //         }}
+  //       />
+  //     </Switch>
+  //     <Route render={() => <Redirect to="/" />} />
+  //   </Router>
+  // </RecoilRoot>
+    <Topics/>
   ,document.getElementById("root")
 );
 
