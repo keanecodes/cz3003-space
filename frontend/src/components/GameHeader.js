@@ -70,10 +70,10 @@ const OptionsOverlay = ({handleShowOpt}) => {
         }
         <div className="options-selection-container">
           <button className="glow-border">The Skeld</button>
-          <button className="glow-border">The Skeld (2)</button>
-          <button className="glow-border">The Skeld (3)</button>
-          <button className="glow-border">Mira HQ</button>
+          <button className="glow-border">Mira HQ)</button>
           <button className="glow-border">Polus</button>
+          <button className="glow-border">Airship</button>
+          <button className="glow-border">Island</button>
         </div>
         
         { customGame ?
