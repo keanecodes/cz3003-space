@@ -5,7 +5,7 @@ import axios from 'axios'
 //Test API for Trivia Questions
 const API_URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=easy&type=multiple';
 
-export default function GameWorldStation() {
+export default function GameWorldStation({auth, setRender}) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showQuestions, setOptionsOverlay]  = useState(false)
   const [topics, setTopics] = useState([])
@@ -13,7 +13,7 @@ export default function GameWorldStation() {
 
   const [topic, setTopic] = useState('')
   const [subtopic, setSubtopic] = useState('')
-  const [difficulty, setDifficulty] = useState('')
+  const [difficulty, setDifficulty] = useState([])
 
   const [progress, setProgress] = useState([])
   const handleShowQuestions = () => setOptionsOverlay(!showQuestions)
@@ -22,11 +22,17 @@ export default function GameWorldStation() {
   let level = ['easy', 'medium', 'hard'];
 
   useEffect( async () => {
-      const results = await getTopics();
-      console.log(results[0]);
-      getSubtopics(results[currentIndex]);
+      const top = await getTopics();
+      console.log(top[0]);
+
+      const subs = await getSubtopics(top[currentIndex]);
+      console.log(subs)
+
+      getSubtopicsDifficulty(top[currentIndex], subs);
     
   }, [currentIndex]);
+
+
 
   const getTopics = async () => {
     const res = await axios.get("/topics")
@@ -42,6 +48,18 @@ export default function GameWorldStation() {
     const res = await axios.get("/subtopics", { params: topic })
           .then(data => {
               setSubtopics(data.data);
+              return data.data;
+          });
+
+    return res;
+  }
+
+  const getSubtopicsDifficulty = async (topic, subtopics) => {
+    console.log(subtopics)
+    const res = await axios.get("/subtopics/level", { params: {topic, subtopics} })
+          .then(data => {
+              console.log(data.data)
+              setDifficulty(data.data);
               return data.data;
           });
 
@@ -66,7 +84,7 @@ export default function GameWorldStation() {
   const handleQuestions = (topic, subtopic, level) => {
     setTopic(topic);
     setSubtopic(subtopic);
-    setDifficulty(level);
+    // setDifficulty(level);
     handleShowQuestions();
   }
 
@@ -97,6 +115,7 @@ export default function GameWorldStation() {
       <div className="sb-category sb-table" data-id="The Deck" data-sb="true" data-type="sb-category" data-unsorted="true">
           <h2><sb-var data-var="id">{topics[currentIndex]}</sb-var></h2>
           {
+           subtopics.length > 0 ?  
             subtopics.map((stopic, index) => (
               progress.find((e) => e === stopic ) ? 
               (
@@ -127,17 +146,17 @@ export default function GameWorldStation() {
                 </div>
               )
             )
-          )
+          ) : <h1>Loading...</h1>
           }
          
-          <div disabled style={{textAlign: "center", boxShadow: "0 0 var(--glow-border-blur) var(--glow-border-width) grey, inset 0 0 var(--glow-border-blur) var(--glow-border-width) grey", border: "var(--glow-border-width) solid grey", color: "grey", backgroundColor: "grey", opacity: 0.5}} data-id="misc-magic" data-sb="true" data-type="sb-task" className="sb-task glow-border" data-unsorted="true" data-active="false"
+          <div disabled style={{textAlign: "center", boxShadow: "0 0 var(--glow-border-blur) var(--glow-border-width) grey, inset 0 0 var(--glow-border-blur) var(--glow-border-width) grey", border: "var(--glow-border-width) solid grey", color: (progress.length >= subtopics.length)? "green":"grey", backgroundColor: (progress.length >= subtopics.length)? "green":"grey", opacity: (progress.length >= subtopics.length)? 1:0.5}} data-id="misc-magic" data-sb="true" data-type="sb-task" className="sb-task glow-border" data-unsorted="true" data-active="false"
           onClick={handleNextChapter}>
             <sb-task-details role="button" style={{alignItems: "center"}}>
               <h4><sb-var data-var="name">Next Chapter</sb-var></h4>
             </sb-task-details>
           </div>
           <div>
-          { showQuestions ? <Questions handleShowQuestions={handleShowQuestions} topic={topic} subtopic={subtopic} level={difficulty} progress={progress} setProgress={setProgress}/> : null } 
+          { showQuestions ? <Questions setRender={setRender} auth={auth} handleShowQuestions={handleShowQuestions} topic={topic} subtopic={subtopic} level={difficulty} progress={progress} setProgress={setProgress}/> : null } 
           </div>
       </div>
     </div>

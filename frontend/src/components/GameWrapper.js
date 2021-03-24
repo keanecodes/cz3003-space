@@ -10,12 +10,13 @@ export default function GameWrapper() {
   const auth = useRecoilValue(userAuth)
   const [game, setGame] = useState(null)
 	const attachGame = game => setGame(game);
+  const [render, setRender] = useState(false)
 
   return (
     <>
-      <GameHeader auth={auth}/>
+      <GameHeader auth={auth} render={render} setRender={setRender}/>
       <div className="task-wrapper">
-        <GameWorldStation/>
+        <GameWorldStation auth={auth} setRender={setRender}/>
         <div id="phaser">
           <GameInstance setGame={attachGame} game={game} auth={auth}/>
         </div>

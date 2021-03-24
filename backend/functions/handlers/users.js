@@ -1,6 +1,7 @@
 const { db } = require('../util/admin');
 const { firebaseConfig } = require('../util/config');
 const firebase = require('firebase');
+const FieldValue = require('firebase-admin').firestore.FieldValue;
 firebase.initializeApp(firebaseConfig);
 
 const {
@@ -192,3 +193,68 @@ exports.getAuthenticatedUser = (req, res) => {
       return res.status(500).json({ error: err.code });
     });
 };
+
+exports.updateScore = (req, res) => {
+  let {id, score, progress} = req.body.params;
+  console.log(req.body.params);
+
+  if (score === 1)
+    score = 50;
+  else if (score === 2)
+    score = 100;
+  else 
+    score = 150;
+
+
+  try {
+    db.collection("users")
+    .where("userId","==",id)
+    .get()
+    .then(function(querySnapshot) {
+      querySnapshot.forEach(function(document) {
+       document.ref.update({score: FieldValue.increment(score) }); 
+      });
+    });
+
+    // db.collection("gameplays")
+    // .where("userId","==",id)
+    // .add({ progress: progress });
+
+    return res.status(200).json({message: "Score updated"});
+    
+  } catch (error) {
+    
+    console.log(error);
+    return res.status(500).json({message: error});
+  }
+}
+
+exports.getScore = (req, res) => {
+
+  let data = [];
+
+  try {
+    db.collection("users")
+    .get()
+    .then((snapshot) => {
+      snapshot.forEach((doc) => {
+        if (!doc.exists) {
+          return res.status(400).json({ message:'No users' });
+        } 
+        else {
+          if(doc._fieldsProto.isProfessor === undefined)
+            // console.log(doc._fieldsProto.isProfessor)
+            data.push(doc._fieldsProto);
+        }
+      });
+      console.log(data);
+      return res.status(200).json(data);
+    });
+   
+    
+  } catch (error) {
+    
+    console.log(error);
+    return res.status(500).json({message: error});
+  }
+}
