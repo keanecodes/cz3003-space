@@ -24,7 +24,8 @@ const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress,
         //      });
         axios.get("/questions",{ params: { topic, subtopic, level } })
                 .then(data => {
-                    // console.log(cleanUp(data));
+                    console.log(data);
+                    console.log(cleanUp(data));
                     setQuestions(cleanUp(data));
                 });        
     }, []);
@@ -67,13 +68,13 @@ const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress,
   
       channel.forEach(element => {
         let item = {
-              correct_answer: element.correct_answer.stringValue,
+              correct_answer: element.correct_answer,
               incorrect_answers: [
-                element.incorrect_answers.arrayValue.values[0].stringValue, 
-                element.incorrect_answers.arrayValue.values[1].stringValue, 
-                element.incorrect_answers.arrayValue.values[2].stringValue
+                element.incorrect_answers[0], 
+                element.incorrect_answers[1], 
+                element.incorrect_answers[2]
               ],
-              question: element.question.stringValue
+              question: element.question
           }
           items.push(item);  
         })

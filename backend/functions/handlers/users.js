@@ -196,7 +196,6 @@ exports.getAuthenticatedUser = (req, res) => {
 
 exports.updateScore = (req, res) => {
   let {id, score, progress} = req.body.params;
-  console.log(req.body.params);
 
   if (score === 1)
     score = 50;
@@ -247,7 +246,6 @@ exports.getScore = (req, res) => {
             data.push(doc._fieldsProto);
         }
       });
-      console.log(data);
       return res.status(200).json(data);
     });
    

@@ -25,6 +25,7 @@ export default function Topics() {
         let subtopicAndQuestions = []
         for (let subtopic of subtopics){
           let questions = (await getQuestions(topic, subtopic))
+          console.log(questions)
           subtopicAndQuestions.push({subtopic: subtopic, questions: questions});
         }
 
@@ -114,7 +115,7 @@ export default function Topics() {
 
                         return (
                             <p>
-                              {question.question.stringValue.toString()}
+                              {question.question}
                               <br/>
                             </p>
                         )
