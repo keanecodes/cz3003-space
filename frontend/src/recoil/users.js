@@ -1,4 +1,4 @@
-import { atom } from 'recoil'
+import { atom, selector, useRecoilState } from 'recoil'
 import axios from 'axios'
 import jwtDecode from "jwt-decode";
 
@@ -78,6 +78,17 @@ export const logoutUser = () => {
 
 export const getUserData = () => {
   return axios.get('/user');
+}
+
+export const sendUserServerUpdate = reqBody => {
+  return axios
+  .post('/user', reqBody)
+  .then(res => {
+    return getUserData()
+  })
+  .catch(err => {
+    console.error(err)
+  });
 }
 
 // login set localStorage

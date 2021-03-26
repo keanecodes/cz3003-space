@@ -18,9 +18,9 @@ export default function GameWrapper() {
       <div className="task-wrapper">
         <GameWorldStation auth={auth} setRender={setRender}/>
         <div id="phaser">
-          <GameInstance setGame={attachGame} game={game} auth={auth}/>
+          <GameInstance setGame={attachGame} game={game}/>
         </div>
-        <GamePrompt auth={auth}/>
+        <GamePrompt/>
       </div>
     </>
   )
