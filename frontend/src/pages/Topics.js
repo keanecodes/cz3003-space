@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Form from './Form';
+import Form from '../components/Form';
 
 let topics = [];
 
@@ -25,7 +25,7 @@ export default function Topics() {
         let subtopicAndQuestions = []
         for (let subtopic of subtopics){
           let questions = (await getQuestions(topic, subtopic))
-          console.log(questions)
+          // console.log(questions) //kne: please try to remove testing console logs where possible
           subtopicAndQuestions.push({subtopic: subtopic, questions: questions});
         }
 
@@ -34,7 +34,7 @@ export default function Topics() {
         if (exists === undefined) {
           topics.push({topic: topic, subtopics: subtopicAndQuestions});
         }
-        console.log(topics)
+        // console.log(topics) //kne: please try to remove testing console logs where possible
         setCurrentIndex(currentIndex+1);
       }
     })();
@@ -101,10 +101,10 @@ export default function Topics() {
       <div className="content" role="main" id="challenges">
         <sb-categorylist>
           {topics.map((e, index) => (
-              <div className="sb-category" data-id="keys" data-sb="true" data-type="sb-category" data-unsorted="true">
+              <div key={`${e.topic}-${index}`} className="sb-category" data-id="keys" data-sb="true" data-type="sb-category" data-unsorted="true">
                 <h2 onClick = {() => handleTopic(e.topic)} ><sb-var data-var="id">{e.topic}</sb-var></h2>
                 {e.subtopics.map((subtopicObj) => (
-                    <div  className="sb-task glow-border"
+                    <div key={`${e.topic}-${index}-${subtopicObj.subtopic}`} className="sb-task glow-border"
                          onClick = {() => handleSubtopic(e.topic, subtopicObj.subtopic)}>
 
                       <sb-task-details role="button">
@@ -114,7 +114,7 @@ export default function Topics() {
                       {subtopicObj.questions.map(question => {
 
                         return (
-                            <p>
+                            <p key={`${e.topic}-${index}-${subtopicObj.subtopic}-${question.question}`}>
                               {question.question}
                               <br/>
                             </p>

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { userAuth } from '../recoil/users'
-import GameHeader from './GameHeader'
-import GameInstance from './GameInstance'
-import GamePrompt from './GamePrompt'
-import GameWorldStation from './GameWorldStation'
+import GameHeader from '../components/GameHeader'
+import GameInstance from '../components/GameInstance'
+import GamePrompt from '../components/GamePrompt'
+import GameWorldStation from '../components/GameWorldStation'
 
 export default function GameWrapper() {
   const auth = useRecoilValue(userAuth)

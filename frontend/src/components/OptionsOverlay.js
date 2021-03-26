@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { userAuth, sendUserServerUpdate } from '../recoil/users'
-import { spriteIdMap } from "../phaser/importer";
+import { spriteIdMap } from "../utils/importer";
 
 
 export default function OptionsOverlay({handleShowOpt}) {

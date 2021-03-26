@@ -23,10 +23,10 @@ export default function GameWorldStation({auth, setRender}) {
 
   useEffect( async () => {
       const top = await getTopics();
-      console.log(top[0]);
+      // console.log(top[0]); //kne: please try to remove testing console logs where possible 
 
       const subs = await getSubtopics(top[currentIndex]);
-      console.log(subs)
+      // console.log(subs) //kne: please try to remove testing console logs where possible
 
       getSubtopicsDifficulty(top[currentIndex], subs);
     
@@ -55,7 +55,7 @@ export default function GameWorldStation({auth, setRender}) {
   }
 
   const getSubtopicsDifficulty = async (topic, subtopics) => {
-    console.log(subtopics)
+    // console.log(subtopics) //kne: please try to remove testing console logs where possible
     const res = await axios.get("/subtopics/level", { params: {topic, subtopics} })
           .then(data => {
               console.log(data.data)
@@ -66,7 +66,7 @@ export default function GameWorldStation({auth, setRender}) {
     return res;
   }
 
-  console.log(topics);
+  // console.log(topics); //kne: please try to remove testing console logs where possible
 
   // Extract relevant data
   const cleanUp = (data) => {
@@ -119,7 +119,7 @@ export default function GameWorldStation({auth, setRender}) {
             subtopics.map((stopic, index) => (
               progress.find((e) => e === stopic ) ? 
               (
-                <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-solved="true" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border">
+                <div key={`${topics[currentIndex]}-${subtopic}-${index}`} data-id="misc-magic" data-sb="true" data-type="sb-task" data-solved="true" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border">
                   <sb-task-details role="button">
                     <h4><sb-var data-var="name">{stopic}</sb-var></h4>
                     <sb-meta>
@@ -132,7 +132,7 @@ export default function GameWorldStation({auth, setRender}) {
                 </div>
               ): 
               (
-                <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" 
+                <div key={`${topics[currentIndex]}-${subtopic}-${index}`} data-id="misc-magic" data-sb="true" data-type="sb-task" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" 
                   onClick={() => handleQuestions(topics[currentIndex], stopic, level[index])} >
                   <sb-task-details role="button">
                     <h4><sb-var data-var="name">{stopic}</sb-var></h4>

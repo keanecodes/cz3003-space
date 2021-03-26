@@ -13,7 +13,7 @@ const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress,
 
     // const ids = useSelector((state) => (state.form)); 
   
-    console.log(level, topic, subtopic);
+    // console.log(level, topic, subtopic); //kne: please try to remove testing console logs where possible
     
     useEffect(() => {
         // fetch(API_URL)
@@ -24,8 +24,8 @@ const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress,
         //      });
         axios.get("/questions",{ params: { topic, subtopic, level } })
                 .then(data => {
-                    console.log(data);
-                    console.log(cleanUp(data));
+                    // console.log(data);
+                    // console.log(cleanUp(data)); //kne: please try to remove testing console logs where possible
                     setQuestions(cleanUp(data));
                 });        
     }, []);
@@ -34,14 +34,14 @@ const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress,
       if(gameEnded === true)
       { 
         if(score === questions.length) {
-          console.log(subtopic);
+          // console.log(subtopic); //kne: please try to remove testing console logs where possible
           setProgress(progress.concat(subtopic));
           let id = auth.user.bio.userId;
           axios.post("/score",{ params: { id, score, progress } });
           
           setRender(true);
-          console.log(auth.user.bio.userId);
-          console.log(progress);
+          // console.log(auth.user.bio.userId); //kne: please try to remove testing console logs where possible
+          // console.log(progress); //kne: please try to remove testing console logs where possible
         }
       }
     }, [gameEnded])

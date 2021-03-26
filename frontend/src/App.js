@@ -1,13 +1,13 @@
 import React, {useState, useEffect} from "react";
 // import { getRoutes } from "./routes.js";
-import Toolbar from "./Toolbar";
-import Account from "./Account";
-import Leaderboard from "./Leaderboard";
-import Topics from "./Topics";
-import GameWrapper from "./GameWrapper";
+import Toolbar from "./components/Toolbar";
+import Account from "./pages/Account";
+import Leaderboard from "./pages/Leaderboard";
+import Topics from "./pages/Topics";
+import GameWrapper from "./pages/GameWrapper";
 import { useRecoilState } from "recoil";
-import { API_BASE_URL } from '../recoil/config'
-import { contentState } from "../recoil/atoms"
+import { API_BASE_URL } from './recoil/config'
+import { contentState } from "./recoil/atoms"
 import { Switch, Route } from "react-router-dom";
 import axios from 'axios'
 

@@ -13,12 +13,12 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
         isTopic ? 
         axios.post("/create/subtopic",{ ...formValues, topic })
                 .then(data => {
-                    console.log(data);
+                    // console.log(data); //kne: please try to remove testing console logs where possible
                 })
         :
         axios.post("/create/question",{ ...formValues, topic, subtopic })
                 .then(data => {
-                    console.log(data);
+                    // console.log(data); //kne: please try to remove testing console logs where possible
                 });  
         
         setFormValues([]);

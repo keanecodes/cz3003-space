@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import shipImg from '../assets/ship.png';
-import { spriteIdMap } from './importer'
+import { spriteIdMap } from '../utils/importer'
 import {
   PLAYER_SPRITE_HEIGHT,
   PLAYER_SPRITE_WIDTH,
@@ -48,7 +48,6 @@ class MyGame extends Phaser.Scene {
       });
     })
 
-    console.log(this.RTdatabase, this.firestore);
     if (this.game.config.user) {
       this.playerId = this.game.config.user.userId;
       this.playerName = this.game.config.user.displayName;
@@ -115,10 +114,8 @@ class MyGame extends Phaser.Scene {
     const playersFirestoreRef = this.firestore.collection('users');
     playersFirestoreRef.doc(this.playerId).onSnapshot(doc => {
       if (doc.data().sprite !== this.playerSpriteColor) {
-        console.log('updating')
         const spriteColor = doc.data().sprite
         this.RTdatabase.ref(this.roomAddress + this.playerId).update({ updating: true, spriteColor})
-        // console.log(this.player.sprite)
         this.player.sprite.list[0].setTexture(spriteColor) 
       }
     })
