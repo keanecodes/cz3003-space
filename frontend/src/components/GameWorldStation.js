@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import Questions from './Questions';
 import axios from 'axios'
+import { useRecoilValue } from 'recoil'
+import { userAuth } from '../recoil/users'
+import Questions from './Questions';
 
 //Test API for Trivia Questions
 const API_URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=easy&type=multiple';
 
-export default function GameWorldStation({auth, setRender}) {
+export default function GameWorldStation({ setRender }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showQuestions, setOptionsOverlay]  = useState(false)
   const [topics, setTopics] = useState([])
@@ -16,6 +18,7 @@ export default function GameWorldStation({auth, setRender}) {
   const [difficulty, setDifficulty] = useState([])
 
   const [progress, setProgress] = useState([])
+  const auth = useRecoilValue(userAuth)
   const handleShowQuestions = () => setOptionsOverlay(!showQuestions)
 
   let points = [50, 100, 150];

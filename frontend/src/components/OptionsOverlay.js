@@ -1,63 +1,36 @@
 import React, { useState } from 'react'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { userAuth, sendUserServerUpdate } from '../recoil/users'
 import { spriteIdMap } from "../utils/importer";
 
 
 export default function OptionsOverlay({handleShowOpt}) {
   const [customGame, setCustomGame] = useState(false)
-  const handleUIToggleCustomGame = () => setCustomGame(!customGame)
 
   return (
     <div className="sb-task-dialog-container">
       <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
-        <div className="sb-task-header dashed" data-click onClick={handleShowOpt}>
-          <div className="game-header-title">
-            <h2>Requirements Engineering</h2>
-            <div className="sb-meta">The Skeld - Room: 12091923094</div>
-          </div>
-          <h3>Options</h3>
-        </div>
-        <p>Change Body Colour</p>
-        <div className="options-selection-container">
-          <ColourChoices closeDialog={handleShowOpt}/>
-        </div>
+        <OptionsHeader closeDialog={handleShowOpt}/>
+        <ColourChoices closeDialog={handleShowOpt}/>
         
-        <div style={{display: "flex", justifyContent: "spaceBetween", margin: "0 auto", marginTop: "3rem"}}>
-          <p style={{opacity: customGame ? 0.5 : 1}}>Go to other Room or World</p>
-          <CheckBox handleSetCustomGame={handleUIToggleCustomGame}/>
-          <p style={{opacity: customGame ? 1 : 0.5}}>Create Custom Game</p>
-        </div>
-        { !customGame ? 
-         (<form>
-          <div className="sb-task-foot">
-            <input aria-label="Flag" type="text" pattern="\{[^{}]+\}" tabIndex="1" placeholder="12091923094" spellCheck="false" className="glow-border"/>
-            <span aria-live="assertive" role="alert"><strong><sb-var data-var="error"></sb-var></strong></span>
-            <input type="submit" tabIndex="2" className="glow-border" value="Go"/>
-          </div>
-        </form>) 
-        : null }
-
-        { customGame 
-          ? <p>Select 1 or multiple topic(s) for the custom game</p>
-          : <p>Revisit cleared World Map (Topic Revisit)</p>
-        }
-        <div className="options-selection-container">
-          <button className="glow-border">The Skeld</button>
-          <button className="glow-border">Mira HQ</button>
-          <button className="glow-border">Polus</button>
-          <button className="glow-border">Airship</button>
-          <button className="glow-border">Island</button>
-        </div>
+        <CustomGameToggle state={customGame} toggleState={setCustomGame} />
         
-        { customGame ?
-         (<><br/>
-          <div className="sb-task-foot" style={{padding: "0 var(--task-dialog-padding)"}}>
-            <input style={{ width: "100%"}} type="submit" className="glow-border" value="Go to New Room for Custom Game"/>
-          </div>
-          </>)
-        : null}
+        <GoAnotherRoomField customGame={customGame} closeDialog={handleShowOpt}/>
+        <MapSelectionsPurpose customGame={customGame}/>
       </div>
+    </div>
+  )
+}
+
+const OptionsHeader = ({closeDialog}) => {
+  const auth = useRecoilValue(userAuth)
+  return (
+    <div className="sb-task-header dashed" data-click onClick={closeDialog}>
+      <div className="game-header-title">
+        <h2>Requirements Engineering</h2>
+        <div className="sb-meta">The Skeld - Room: {auth?.roomNum}</div>
+      </div>
+      <h3>Options</h3>
     </div>
   )
 }
@@ -82,30 +55,96 @@ const ColourChoices = ({closeDialog}) => {
 
   return(
     <>
-      { UILoading 
-        ? (<div style={{margin: "0 auto", fontSize: "2.5rem"}}>Painting your body... (☆v☆)</div>)
-        : (slicedSpriteMap.map(id =>
-          <button
-            key={`{btn-color-${id}}`}
-            data-player-color={id} 
-            onClick={handleGameAvatarUpdate} 
-            className="glow-border">
-              {spriteIdMap[id].label.toUpperCase()}
-          </button>
-        ))
-      }
+      <p>Change Body Colour</p>
+      <div className="options-selection-container">
+        { UILoading 
+          ? (<div style={{margin: "0 auto", fontSize: "2.5rem"}}>Painting your body... (☆v☆)</div>)
+          : (slicedSpriteMap.map(id =>
+            <button
+              key={`{btn-color-${id}}`}
+              data-player-color={id} 
+              onClick={handleGameAvatarUpdate} 
+              className="glow-border">
+                {spriteIdMap[id].label.toUpperCase()}
+            </button>
+          ))
+        }
+      </div>
     </>
   )
 }
 
-const CheckBox = ({handleSetCustomGame}) => {
+const CustomGameToggle = ({state, toggleState}) => {
+  const handleUIToggleCustomGame = () => toggleState(!state)
+  
+  return (
+    <div style={{display: "flex", justifyContent: "spaceBetween", margin: "0 auto", marginTop: "3rem"}}>
+      <p style={{opacity: state ? 0.5 : 1}}>Go to other Room or World</p>
+      <CheckBox toggle={handleUIToggleCustomGame}/>
+      <p style={{opacity: state ? 1 : 0.5}}>Create Custom Game</p>
+    </div>
+  )
+}
+
+const CheckBox = ({toggle}) => {
   return (
     <label className="sb-email-consent" style={{marginLeft: "10px", marginTop: "-10px"}} data-click="logEmail">
-      <input type="checkbox" onClick={handleSetCustomGame}/>
+      <input type="checkbox" onClick={toggle}/>
       {/* <span>
         By joining this team, you agree to follow the <a href="/rules.pdf" target="_blank">
         rules of the Google CTF 2018</a>. Note you can only join one team.
       </span> */}
     </label> 
+  )
+}
+
+const GoAnotherRoomField = ({customGame, closeDialog}) => {
+  const [auth, setAuth] = useRecoilState(userAuth)
+  const [formValues, setFormValues] = useState(Math.random().toString().split('.')[1].slice(0,10))
+  
+  const handleOnChange = e => setFormValues(e.target.value)
+  const handleSubmit = e => {
+    e.preventDefault()
+    setAuth({...auth, roomNum: e.target.localName == 'button' ? 'LOBBY' : formValues})
+    closeDialog()
+  }
+
+  return (
+    !customGame ? (
+      <form id="room-form" onSubmit={handleSubmit}>
+        <div className="sb-task-foot">
+          {auth?.roomNum !== 'LOBBY' ? <button onClick={handleSubmit} className="glow-border" style={{width: "25%", paddingBottom: "0.7ex"}}>&#8592; Lobby</button> : null}
+          <input type="text" value={formValues} placeholder="Room number has to be 1-10 digits" onChange={handleOnChange} pattern="^\s*-?\d{1,10}" tabIndex="1" spellCheck="false" className="glow-border"/>
+          <span aria-live="assertive" role="alert"><strong><sb-var data-var="error"></sb-var></strong></span>
+          <input value="Go" type="submit" form="room-form" tabIndex="2" className="glow-border"/>
+        </div>
+      </form>
+    ) : null 
+  )
+}
+
+const MapSelectionsPurpose = ({customGame}) => {
+  return (
+    <>
+      { customGame 
+        ? <p>Select 1 or multiple topic(s) for the custom game</p>
+        : <p>Revisit cleared World Map (Topic Revisit)</p>
+      }
+      <div className="options-selection-container">
+        <button className="glow-border">The Skeld</button>
+        <button className="glow-border">Mira HQ</button>
+        <button className="glow-border">Polus</button>
+        <button className="glow-border">Airship</button>
+        <button className="glow-border">Island</button>
+      </div>
+      { customGame 
+        ?(<><br/>
+          <div className="sb-task-foot" style={{padding: "0 var(--task-dialog-padding)"}}>
+            <input style={{ width: "100%"}} type="submit" className="glow-border" value="Go to New Room for Custom Game"/>
+          </div>
+          </>)
+        : null
+      }
+    </>
   )
 }

@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useRecoilValue } from 'recoil'
+import { userAuth } from '../recoil/users'
 import OptionsOverlay from './OptionsOverlay'
 
-export default function GameHeader({auth, render, setRender}) {
+export default function GameHeader({render, setRender}) {
   const [showOptions, setOptionsOverlay]  = useState(false)
   const handleShowOpt = () => setOptionsOverlay(!showOptions)
   const [user, setUser] = useState([]);
+  const auth = useRecoilValue(userAuth)
 
 
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function GameHeader({auth, render, setRender}) {
         <h2><sb-var data-var="name">Score: {user.score}</sb-var></h2>
       </div>
       <div className="game-header-title">
-        <h2><sb-var data-var="name">Room: 12091923094</sb-var></h2>
+        <h2><sb-var data-var="name">Room: {auth?.roomNum}</sb-var></h2>
         <div className="sb-meta">
           <sb-var data-var="label">The Skeld - Requirements Engineering</sb-var>
         </div>

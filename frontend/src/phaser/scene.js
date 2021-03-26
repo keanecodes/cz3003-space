@@ -28,7 +28,7 @@ class MyGame extends Phaser.Scene {
     }
     this.RTdatabase = firebase.database();
     this.firestore = firebase.firestore();
-    this.roomNumber = Math.random().toString().split('.')[1];
+    this.roomNumber = "00000000";
     this.player = {}
     this.playerId = Math.random().toString().split('.')[1];
     this.playerName = "";
@@ -53,6 +53,7 @@ class MyGame extends Phaser.Scene {
       this.playerName = this.game.config.user.displayName;
       this.playerSpriteColor = this.game.config.user.sprite;
       // console.log(this.playerSprite)
+      this.roomNumber = this.game.config.user.roomNum
     }
   }
 
@@ -107,10 +108,11 @@ class MyGame extends Phaser.Scene {
       pressedKeys = pressedKeys.filter((key) => key !== e.code);
     });
 
-    this.roomAddress = 'rooms/' + this.roomNumber + '/players/';
+    this.roomAddress = this.roomNumber == 'LOBBY' ? 'lobby/players/' : 'rooms/' + this.roomNumber + '/players/';
 
     const thisPlayerRTRef = this.RTdatabase.ref(this.roomAddress + this.playerId);
     thisPlayerRTRef.onDisconnect().set({});
+    this.scene.scene.events.on('destroy', () => thisPlayerRTRef.set({}))
     const playersFirestoreRef = this.firestore.collection('users');
     playersFirestoreRef.doc(this.playerId).onSnapshot(doc => {
       if (doc.data().sprite !== this.playerSpriteColor) {
@@ -118,6 +120,14 @@ class MyGame extends Phaser.Scene {
         this.RTdatabase.ref(this.roomAddress + this.playerId).update({ updating: true, spriteColor})
         this.player.sprite.list[0].setTexture(spriteColor) 
       }
+    })
+    const gameplayFirestoreRef = this.firestore.collection('gameplays');
+    gameplayFirestoreRef.doc(this.playerId).set({
+      checkPoint: "", //Game Master
+      checkPosX: PLAYER_START_X, //-170,
+      checkPosY: PLAYER_START_Y, //50,
+      world: "The Skeld",
+      room: this.roomNumber
     })
     const playersRef = this.RTdatabase.ref(this.roomAddress);
     playersRef.on('value', snapshot => { this.updatePlayerPositions(snapshot.val()) });

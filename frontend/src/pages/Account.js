@@ -25,10 +25,10 @@ export default function Account({view, history}) {
         // })
         // redirect
         if (data) {
-          // state
           setUserAuth({
             isAuthenticated: true,
-            user: data
+            user: data,
+            roomNum: "LOBBY"
           })
 
           // redirect to dashboard
@@ -67,7 +67,7 @@ export default function Account({view, history}) {
         {view != "reset" ? <Input label="password" type="password" tips={false}/> : null}
         
         <input className="glow-border" form="login-form" type="submit" value="Enter"/>
-        <form id="login-form" onSubmit={handleSubmit}></form>
+        <form id="login-form" onSubmit={handleSubmit}/>
       </div>
       
       <div>

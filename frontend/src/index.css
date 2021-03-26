@@ -681,6 +681,7 @@ input[type="checkbox"]:checked::after {
 }
 
 .options-selection-container button,
+.sb-task-foot button,
 .sb-task-foot input[type="submit"] {
   font-family: inherit;
   font-size: var(--heading-4-text-size);
