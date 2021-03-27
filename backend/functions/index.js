@@ -22,7 +22,8 @@ const {
   getQuestions,
   createSubtopic,
   createQuestion,
-  editQuestion
+  editQuestion,
+  deleteQuestion,
 } = require("./handlers/questions");
 
 // Users route
@@ -41,9 +42,8 @@ app.get('/subtopics/level', getSubtopicsDifficulty);
 app.get('/questions', getQuestions);
 app.post('/create/subtopic', createSubtopic);
 app.post('/create/question', createQuestion);
-app.post('/edit/question', editQuestion)
-
-
+app.post('/edit/question', editQuestion);
+app.post('/delete/question', deleteQuestion);
 
 
 // exports.getDonations = functions.https.onRequest((req, res) => { });

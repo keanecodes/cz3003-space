@@ -174,6 +174,7 @@ exports.editQuestion = (req, res) => {
         difficulty} = req.body;
 
     let collectionRef = db.collection('questions').doc(topic).collection(subtopic);
+
     collectionRef
     .where('question', '==', question).get()
     .then(querySnapshot => {
@@ -194,5 +195,29 @@ exports.editQuestion = (req, res) => {
 
     )
     return res.status(200)
-
 }
+
+exports.deleteQuestion = (req, res) => {
+    const {
+        question,
+        topic,
+        subtopic
+    } = req.body;
+
+    let deleted = [];
+
+    let collectionRef = db.collection('questions').doc(topic).collection(subtopic);
+    collectionRef.where('question', '==', question).get().then(querySnapshot => {
+        querySnapshot.forEach(doc=>{
+            doc.ref.delete().then(()=>{
+                console.log(doc.id + 'deleted');
+                deleted.push(doc.id)
+            }).catch(e=>{
+                console.log(e);
+                return res.status(400).json(e);
+            })
+        })});
+        let returnMessage = (deleted.length > 0) ? 'successfully deleted ' + deleted : 'no questions matching query found.'
+        return res.status(200).json(returnMessage);
+}
+
