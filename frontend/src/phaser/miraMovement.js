@@ -5,7 +5,7 @@ const isWithinMovementBoundaries = (x, y) => {
   return !miramapBounds[y] ? true : !miramapBounds[y].includes(x);
 };
 
-export const miraMovePlayer = (keys, player) => {
+export const movePlayer = (keys, player) => {
   const absPlayerX = player.x + MIRA_SHIP_WIDTH / 2;
   const absPlayerY = player.y + MIRA_SHIP_HEIGHT / 2 + 20;
   if (

@@ -8,9 +8,11 @@ import {
   PLAYER_WIDTH,
   PLAYER_START_X,
   PLAYER_START_Y,
-} from "./constants";
-import { movePlayer } from "./movement";
-import { animateMovement } from "./animation";
+  MIRA_PLAYER_START_X,
+  MIRA_PLAYER_START_Y,
+} from './constants';
+import { movePlayer } from './miraMovement';
+import { animateMovement } from './animation';
 
 import firebase from "firebase/app";
 import "firebase/database";
@@ -20,7 +22,7 @@ import { firebaseConfig } from "../recoil/config";
 let pressedKeys = [];
 const npc = {};
 
-class MyGame extends Phaser.Scene {
+export class MyGame extends Phaser.Scene {
   constructor() {
     super({ key: "Game" });
     if (firebase.apps.length === 0) {
@@ -203,3 +205,4 @@ class MyGame extends Phaser.Scene {
 }
 
 export default MyGame;
+
