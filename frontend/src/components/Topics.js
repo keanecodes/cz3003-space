@@ -7,7 +7,6 @@ let topics = [];
 const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
 
   const[formValues, setFormValues] = useState([]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -24,7 +23,6 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
             });
 
     setFormValues([]);
-    location.reload();
   }
 
   return (
@@ -41,7 +39,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
               ):(
                   <div>
                     <h2>Create New Question</h2>
-                    <h4>{subtopic}</h4>
+                    <h4>Selected sub-topic: {subtopic}</h4>
                   </div>
               )}
 
@@ -84,7 +82,6 @@ const EditForm = ({handleShowEditForm,  topic, subtopic}) => {
         })
 
     setFormValues([]);
-    // location.reload();
   }
 
   return (
@@ -92,7 +89,8 @@ const EditForm = ({handleShowEditForm,  topic, subtopic}) => {
         <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
           <div className="sb-task-header dashed" data-click onClick={handleShowEditForm}>
             <div className="game-header-title">
-              <p>Edit Question</p>
+              <h2>Edit Question</h2>
+              <h4>Selected sub-topic: {subtopic}</h4>
             </div>
           </div>
 
@@ -104,6 +102,44 @@ const EditForm = ({handleShowEditForm,  topic, subtopic}) => {
             <Input label="incorrect_answer2" type="incorrect_answer2" formValues={formValues} setFormValues={setFormValues} />
             <Input label="incorrect_answer3" type="incorrect_answer3" formValues={formValues} setFormValues={setFormValues} />
             <Input label="difficulty" type="difficulty" formValues={formValues} setFormValues={setFormValues} />
+          </div>
+
+          <input className="glow-border" form="form" type="submit" value="Submit" />
+          <form id="form" onSubmit={handleSubmit}></form>
+
+        </div>
+      </div>
+  )
+}
+
+const DeleteForm = ({handleShowEditForm,  topic, subtopic }) => {
+  const[formValues, setFormValues] = useState([]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    console.log({...formValues, topic, subtopic})
+
+    axios.post("/delete/question",{ ...formValues, topic , subtopic})
+        .then(data => {
+          console.log(data);
+        })
+
+    setFormValues([]);
+  }
+
+  return (
+      <div className="login-dialog">
+        <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
+          <div className="sb-task-header dashed" data-click onClick={handleShowEditForm}>
+            <div className="game-header-title">
+              <h2>Delete Question</h2>
+              <h4>Selected sub-topic: {subtopic}</h4>
+            </div>
+          </div>
+
+          <div>
+            <Input label="question" type="question" formValues={formValues} setFormValues={setFormValues} />
           </div>
 
           <input className="glow-border" form="form" type="submit" value="Submit" />
@@ -129,15 +165,18 @@ const Input = ({label, type, formValues, setFormValues}) => {
 
 export default function Topics() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [showForm, setOverlay]  = useState(false)
+
   const [topicState, setTopicState] = useState('')
   const [subtopicState, setSubtopicState] = useState('')
   const [isTopic, setIsTopic] = useState(false);
-  const handleShowForm = () => setOverlay(!showForm)
-  const [reload, setReload] = useState(false)
 
+  const [showForm, setOverlay]  = useState(false);
+  const handleShowForm = () => setOverlay(!showForm);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showDeleteForm, setShowDeleteForm] = useState(false);
+
   const [modifyQuestions, setModifyQuestions] = useState(false);
+  const [reload, setReload] = useState(false);
 
   useEffect( () => {
     (async () => {
@@ -194,6 +233,10 @@ export default function Topics() {
 
     return res;
   };
+
+  const deleteQuestion = async (topic, subtopic, question) => {
+
+  }
 
   // Extract relevant data
   const cleanUp = (data) => {
@@ -267,36 +310,48 @@ export default function Topics() {
         </sb-categorylist>
 
         <div>
-        {
-          modifyQuestions ?
+          {
+            modifyQuestions ?
 
-        <div>
-          <div className="sb-task glow-border" onClick={()=>{
-            setShowEditForm(!showEditForm);
-            setOverlay(false);
-          }}>
-            <sb-task-details role="button" >
-              <h4><sb-var data-var="name">Edit question</sb-var></h4>
-            </sb-task-details>
-          </div>
+                <div>
+                  <div className="sb-task glow-border" onClick={()=>{
+                    setShowEditForm(!showEditForm);
+                    setOverlay(false);
+                    setShowDeleteForm(false);
+                  }}>
+                    <sb-task-details role="button" >
+                      <h4><sb-var data-var="name">Edit question</sb-var></h4>
+                    </sb-task-details>
+                  </div>
 
-          <br/>
-          <br/>
-          <br/>
+                  <div className="sb-task glow-border" onClick={()=>{
+                    handleShowForm();
+                    setShowEditForm(false);
+                    setShowDeleteForm(false);
+                  }}>
+                    <sb-task-details role="button">
+                      <h4><sb-var data-var="name">Create New Question</sb-var></h4>
+                    </sb-task-details>
+                  </div>
 
-          <div className="sb-task glow-border" onClick={()=>{
-            handleShowForm();
-            setShowEditForm(false);
-          }}>
-            <sb-task-details role="button">
-              <h4><sb-var data-var="name">Create New Question</sb-var></h4>
-            </sb-task-details>
-          </div>
-          <br/>
-          <br/>
-        </div> : null}
-          { showForm ? <Form handleShowForm={handleShowForm} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setReload={setReload} /> : null }
-          { showEditForm ? <EditForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setReload={setReload} /> : null }
+                  <div className="sb-task glow-border" onClick={()=>{
+                    setOverlay(false);
+                    setShowEditForm(false);
+                    setShowDeleteForm(!showDeleteForm);
+                  }}>
+
+                    <sb-task-details role="button">
+                      <h4><sb-var data-var="name">Delete Question</sb-var></h4>
+                    </sb-task-details>
+                  </div>
+
+                  <br/>
+                  <br/>
+                </div> : null}
+          { showForm ? <Form handleShowForm={handleShowForm} isTopic={isTopic} topic={topicState} subtopic={subtopicState} /> : null }
+          { showEditForm ? <EditForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} isTopic={isTopic} topic={topicState} subtopic={subtopicState} /> : null }
+          { showDeleteForm ? <DeleteForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} isTopic={isTopic} topic={topicState} subtopic={subtopicState}  /> : null }
+          <button onClick={()=>setReload(!reload)}>Refresh</button>
         </div>
       </div>
   )
