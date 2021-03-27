@@ -29,19 +29,35 @@ export default function Leaderboard() {
         items.push(item);  
       })
     
-    items.sort((a, b) => a.score > b.score ? -1 : 1);
+    items.sort((a, b) => b.score - a.score);
 
     return items;
   }
 
 
+  const handleTopic = (e) => {
+    e.preventDefault();
 
+    console.log("topic");
+  }
+
+  const handleSubtopic = (e) => {
+    e.preventDefault();
+
+    console.log("stopic");
+  }
 
   return (
     // <div>
       <div className="content" role="main" id="teams">
         <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
+        <div className="sb-table-head">
+                <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">Topic</sb-var></h2>
+                <h2 onClick={handleSubtopic} className="glow-border"><sb-var data-var="id">Subtopic</sb-var></h2>
+        </div>
           <div className="sb-table-head">
+    
+
             <h2>Players</h2>
             <div className="dashed sb-spacer">
 

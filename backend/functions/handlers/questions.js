@@ -68,34 +68,59 @@ exports.getQuestions = (req, res) => {
         });
 }
 
-exports.getSubtopicsDifficulty = (req, res) => {
+exports.getSubtopicsDifficulty = async (req, res) => {
+    
+  const {topic, subtopics} = req.query;
+  // console.log(req);
 
-    const {topic, subtopics} = req.query;
-    // console.log(req);
+  let data = [];
+  // subtopics.forEach((subtopic) => {
+  //   db.collection('questions')
+  //   .doc(topic)
+  //   .collection(subtopic)
+  //   .doc('difficulty')
+  //   .get()
+  //   .then((doc) => {
+      
+  //       if (!doc.exists) {
+  //         return res.status(400).json({ message:'No questions available' });
+  //       } else {
+  //           console.log(doc._fieldsProto.value.stringValue)
+  //           console.log(data)
+  //           data.push({
+  //             [subtopic]: doc._fieldsProto.value.stringValue
+  //           });
+  //       }
+  //   });
+  // });
 
-    let data = [];
-    subtopics.forEach((subtopic) => {
-        db.collection('questions')
-            .doc(topic)
-            .collection(subtopic)
-            .doc('difficulty')
-            .get()
-            .then((doc) => {
 
-                if (!doc.exists) {
-                    return res.status(400).json({ message:'No questions available' });
-                } else {
-                    console.log(doc._fieldsProto.value.stringValue)
-                    console.log(data)
-                    data.push(doc._fieldsProto.value.stringValue);
-                }
+  await Promise.all(subtopics.map(async (subtopic) => {
+    await db.collection('questions')
+    .doc(topic)
+    .collection(subtopic)
+    .doc('difficulty')
+    .get()
+    .then((doc) => {
+      
+        if (!doc.exists) {
+          return res.status(400).json({ message:'No questions available' });
+        } else {
+            console.log(doc._fieldsProto.value.stringValue)
+            console.log(data)
+            data.push({
+              subtopic: subtopic,
+              difficulty: doc._fieldsProto.value.stringValue
             });
+        }
     });
+  }));
 
-    console.log(data)
+  console.log(data)
+  return res.status(200).json(data);
 
-
-
+  
+  
 }
 
 exports.createSubtopic = (req, res) => {

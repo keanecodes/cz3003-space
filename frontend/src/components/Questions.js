@@ -3,7 +3,7 @@ import Questionare from './Questionare';
 import axios from 'axios'
 
 
-const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress, setProgress, setRender}) => {
+const Questions = ({auth, handlePoints, difficulty, handleShowQuestions, topic, subtopic, progress, setProgress, setRender}) => {
 
     // const dispatch = useDispatch();
     const [questions, setQuestions] = useState([]);
@@ -22,7 +22,7 @@ const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress,
         //          setQuestions(data.results);
         //         // console.log(data);
         //      });
-        axios.get("/questions",{ params: { topic, subtopic, level } })
+        axios.get("/questions",{ params: { topic, subtopic } })
                 .then(data => {
                     // console.log(data);
                     // console.log(cleanUp(data)); //kne: please try to remove testing console logs where possible
@@ -37,7 +37,10 @@ const Questions = ({auth, handleShowQuestions, topic, subtopic, level, progress,
           // console.log(subtopic); //kne: please try to remove testing console logs where possible
           setProgress(progress.concat(subtopic));
           let id = auth.user.bio.userId;
-          axios.post("/score",{ params: { id, score, progress } });
+          let points = handlePoints(difficulty.find((e) => {
+                                      return e.subtopic === subtopic
+                                        })?.difficulty)
+          axios.post("/score",{ params: { id, points, progress } });
           
           setRender(true);
           // console.log(auth.user.bio.userId); //kne: please try to remove testing console logs where possible
