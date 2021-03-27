@@ -527,13 +527,13 @@ sb-beginners-task:not([data-active="true"]) .sb-task-dialog-container {
 @keyframes errorDialog {
   to {
     --glow-border-color: red;
-    --task-dialog-background-color: #800000a0;
-    --login-dialog-background-color: #800000a0;
+    --task-dialog-background-color: #800000	;
+    --login-dialog-background-color: #800000;
     --dashed-color: red;
   }
 }
 [data-wrong-flag="true"], [data-account-error="true"] {
-  animation: errorDialog 3s alternate 2;
+  animation: errorDialog 500ms alternate 2;
 }
 .sb-task-dialog {
   flex: 1 1 var(--task-dialog-width);
