@@ -527,7 +527,7 @@ sb-beginners-task:not([data-active="true"]) .sb-task-dialog-container {
 @keyframes errorDialog {
   to {
     --glow-border-color: red;
-    --task-dialog-background-color: #800000	;
+    --task-dialog-background-color: #800000;
     --login-dialog-background-color: #800000;
     --dashed-color: red;
   }
