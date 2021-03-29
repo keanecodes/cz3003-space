@@ -23,8 +23,6 @@ export default function GameWorldStation({ setRender }) {
   const auth = useRecoilValue(userAuth)
   const handleShowQuestions = () => setOptionsOverlay(!showQuestions)
 
-  // let points = [50, 100, 150];
-  // let level = ['easy', 'medium', 'hard'];
 
   useEffect( async () => {
       const top = await getTopics();

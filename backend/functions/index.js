@@ -14,7 +14,8 @@ const {
   updateScore,
   getScore,
   updateProgress,
-  getProgress
+  getProgress,
+  getTopicScore
 } = require("./handlers/users");
 
 const {
@@ -34,10 +35,11 @@ app.post('/login', login);
 app.post('/reset', resetPassword);
 app.post('/user', authMiddleware, addUserDetails);
 app.get('/user', authMiddleware, getAuthenticatedUser);
-app.post('/score', authMiddleware, updateScore);
-app.get('/user/score', authMiddleware, getScore);
-app.post('/user/progress', authMiddleware, updateProgress);
-app.get('/user/progress', authMiddleware, getProgress);
+app.post('/user/update/score', authMiddleware, updateScore);
+app.get('/user/get/score', authMiddleware, getScore);
+app.post('/user/update/progress', authMiddleware, updateProgress);
+app.get('/user/get/progress', authMiddleware, getProgress);
+app.get('/user/get/topic/score', authMiddleware, getTopicScore);
 
 
 

@@ -40,13 +40,14 @@ const Questions = ({auth, tries, setTries, handlePoints,
           setProgress(progress.concat(subtopic));
           let id = auth.user.bio.userId;
           let points = handlePoints(returnDifficulty(subtopic))
-          axios.post("/score",{ params: { id, points } });
+          axios.post("/user/update/score",{ params: { id, points } });
+          // axios.post("/user/update/checkpoint",{ params: { topic, subtopic } });
           
           console.log(tries+" "+questions.length)
           let totalTries = Math.round(tries/questions.length);
 
           console.log(totalTries)
-          axios.post("/user/progress",{ params: { topic, subtopic, totalTries, id } });
+          axios.post("/user/update/progress",{ params: { topic, subtopic, totalTries, points, id } });
 
           setTries(0);
           setRender(true);

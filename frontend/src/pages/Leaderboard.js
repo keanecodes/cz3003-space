@@ -12,13 +12,15 @@ export default function Leaderboard() {
 
   const [index, setIndex] = useState(0);
   const [showStats, setOptionsOverlay]  = useState(false);
+  const [showSummary, setShowSummary]  = useState(false);
+
   const handleShowStats = () => setOptionsOverlay(!showStats);
 
 
 
   useEffect( async () => {
 
-    axios.get("/user/score")
+    axios.get("/user/get/score")
             .then(data => {
               setUsers(cleanUpScore(data));
               console.log(cleanUpScore(data))
@@ -96,43 +98,39 @@ const getSubtopics = async (topic) => {
   }
 
   const handleSubtopic = (sub) => {
+    setShowSummary(false);
     setSubtopic(sub);
+    handleShowStats();
+    
+  }
+
+  const handleSummary = (sub) => {
+    setShowSummary(true);
     handleShowStats();
     
   }
 
   return (
     // <div>
+    // <div className="game-header">
+
       <div className="content" role="main" id="teams">
         <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
-        <div className="sb-table-head">
-                <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
-                {subtopics.map((sub) => (
-                  <h5 onClick={() => handleSubtopic(sub)} className="glow-border"><sb-var data-var="id">{sub}</sb-var></h5>
-                ))}
+          <div className="sb-table-head" justify-content="center">
+              <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
+              {
+              subtopics.map((sub) => (
+                <h5 onClick={() => handleSubtopic(sub)} className="glow-border"><sb-var data-var="id">{sub}</sb-var></h5>
+              ))
+              }
+              <h2 onClick={handleSummary} className="glow-border"><sb-var data-var="id">Summary</sb-var></h2>            
 
-
-        </div>
+          </div>
           <div className="sb-table-head">
-    
 
             <h2>Players</h2>
-            <div className="dashed sb-spacer">
-
-              {/* <sb-task-details role="button">
-                  <h2><sb-var data-var="name">Spaceship</sb-var></h2>
-                  <h4>Topic</h4>
-                </sb-task-details> */}
-              {/* <div className="sb-task-dialog-container">
-                <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
-                  <div className="sb-task-header dashed" data-click onClick={handleShowOpt}>
-                    <h3>Topics</h3>
-                    <h3>Subtopics</h3>
-                  </div>
-                  
-                </div>
-              </div> */}
-            </div>
+            <div className="dashed sb-spacer"/>
+              
             <h3>Ranking</h3>
           </div>
           <div className="sb-table-head">
@@ -153,7 +151,7 @@ const getSubtopics = async (topic) => {
           }
         </div>
         <div> 
-            {showStats? <Stats handleShowStats={handleShowStats} topic={topics[index]} subtopic={subtopic} users={users}/> : null }
+            {showStats? <Stats handleShowStats={handleShowStats} topic={topics[index]} subtopic={subtopic} users={users} showSummary={showSummary}/> : null }
         </div>
       </div>
     // </div>

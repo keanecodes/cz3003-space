@@ -18,7 +18,7 @@ export default function GameHeader({render, setRender}) {
 
   useEffect(() => {
     
-    axios.get("/user/score")
+    axios.get("/user/get/score")
             .then(data => {
               setUser(cleanUp(data));
             });  

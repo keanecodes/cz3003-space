@@ -197,15 +197,7 @@ exports.getAuthenticatedUser = (req, res) => {
 };
 
 exports.updateScore = (req, res) => {
-  let {id, score, progress} = req.body.params;
-
-  if (score === 1)
-    score = 50;
-  else if (score === 2)
-    score = 100;
-  else 
-    score = 150;
-
+  let {id, points} = req.body.params;
 
   try {
     db.collection("users")
@@ -213,7 +205,7 @@ exports.updateScore = (req, res) => {
     .get()
     .then(function(querySnapshot) {
       querySnapshot.forEach(function(document) {
-       document.ref.update({score: FieldValue.increment(score) }); 
+       document.ref.update({score: FieldValue.increment(points)}); 
       });
     });
 
@@ -261,29 +253,56 @@ exports.getScore = (req, res) => {
 
 exports.updateProgress = (req, res) => {
 
-  let {topic, subtopic, totalTries, id} = req.body.params;
+  let {topic, subtopic, totalTries, points, id} = req.body.params;
   console.log(topic+subtopic+totalTries+id);
 
   try {
-    
-    let exists = db.collection("gameplays")
-                    .doc(id)
-                    .get()
-
-    console.log(exists)
-    if(!exists.length>0) {
-      db.collection("gameplays")
-                    .doc(id)
-                    .set({})
-    }
 
     db.collection("gameplays")
-    .doc(id)
-    .collection(topic)
-    .doc(subtopic)
-    .set({
-      tries: totalTries
-    });
+      .doc(id)
+      .get()
+      .then((doc) => {
+        if(doc.exists){
+          doc.ref
+          .set({
+            tries: totalTries
+          });
+        }
+        else {
+          db.collection("gameplays")
+            .doc(id)
+            .set({})
+        }
+      })
+    
+
+    db.collection("gameplays")
+      .doc(id)
+      .collection(topic)
+      .doc("score")
+      .get()
+      .then((doc) => {
+        console.log(doc.data())
+        
+        if(doc.exists){
+          if(doc.data().totalScore<300){
+            console.log("inc")
+            doc.ref.update({
+                totalScore: FieldValue.increment(points)
+              });
+          }
+          
+        } else {
+          console.log("set")
+          db.collection("gameplays")
+          .doc(id)
+          .collection(topic)
+          .doc("score")
+          .set({
+            totalScore: FieldValue.increment(points)
+          });
+        }
+      })
 
     return res.status(200).json({message:"Updated gameplay"});
 
@@ -318,6 +337,59 @@ exports.getProgress = async (req, res) => {
               data.push({
                 userId: doc.id,
                 tries: snapshot.data().tries
+              })
+              console.log(snapshot.data())
+              
+            }).catch(err => {
+              console.log("Error getting sub-collection documents", err);
+            })
+          })
+        );
+        
+        console.log("resolved")
+        return resolve();
+      
+      }).catch(err => {
+      console.log("Error getting documents", err);
+    }) 
+  })
+
+  promise.then(() => {
+    console.log(data)
+    return res.status(200).json(data);
+  }).catch(err => {
+    console.log("Error returning data", err);
+    return res.status(500).json({message: err});
+
+  })
+    
+ 
+}
+
+
+exports.getTopicScore = async (req, res) => {
+
+  let {topic} = req.query;
+  console.log(req);
+
+ 
+  let data=[];
+  let promise = new Promise( async (resolve, reject) => {
+    db.collection("gameplays").get()
+      .then( async (snapshot) => {
+        // console.log(snapshot)
+        await Promise.all(
+          snapshot.docs.map( async (doc) => {
+          console.log(doc.id)
+          await db.collection("gameplays")
+            .doc(doc.id)
+            .collection(topic)
+            .doc("score")
+            .get()
+            .then( async (snapshot) => {
+              data.push({
+                userId: doc.id,
+                score: snapshot.data().totalScore
               })
               console.log(snapshot.data())
               
