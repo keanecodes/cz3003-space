@@ -262,17 +262,17 @@ exports.updateProgress = (req, res) => {
       .doc(id)
       .get()
       .then((doc) => {
-        if(doc.exists){
-          doc.ref
-          .set({
-            tries: totalTries
-          });
-        }
-        else {
+        if(!doc.exists){
           db.collection("gameplays")
             .doc(id)
             .set({})
         }
+        doc.ref
+          .collection(topic)
+          .doc(subtopic)
+          .set({
+            tries: totalTries
+          });
       })
     
 
