@@ -71,29 +71,8 @@ exports.getQuestions = (req, res) => {
 exports.getSubtopicsDifficulty = async (req, res) => {
     
   const {topic, subtopics} = req.query;
-  // console.log(req);
 
   let data = [];
-  // subtopics.forEach((subtopic) => {
-  //   db.collection('questions')
-  //   .doc(topic)
-  //   .collection(subtopic)
-  //   .doc('difficulty')
-  //   .get()
-  //   .then((doc) => {
-      
-  //       if (!doc.exists) {
-  //         return res.status(400).json({ message:'No questions available' });
-  //       } else {
-  //           console.log(doc._fieldsProto.value.stringValue)
-  //           console.log(data)
-  //           data.push({
-  //             [subtopic]: doc._fieldsProto.value.stringValue
-  //           });
-  //       }
-  //   });
-  // });
-
 
   await Promise.all(subtopics.map(async (subtopic) => {
     await db.collection('questions')
@@ -106,8 +85,7 @@ exports.getSubtopicsDifficulty = async (req, res) => {
         if (!doc.exists) {
           return res.status(400).json({ message:'No questions available' });
         } else {
-            console.log(doc._fieldsProto.value.stringValue)
-            console.log(data)
+
             data.push({
               subtopic: subtopic,
               difficulty: doc._fieldsProto.value.stringValue
@@ -116,7 +94,6 @@ exports.getSubtopicsDifficulty = async (req, res) => {
     });
   }));
 
-  console.log(data)
   return res.status(200).json(data);
 
   
@@ -256,3 +233,27 @@ exports.deleteQuestion = (req, res) => {
         });
 }
 
+
+exports.deleteQuestion = (req, res) => {
+  const {
+      question,
+      topic,
+      subtopic
+  } = req.body;
+
+  let deleted = [];
+
+  let collectionRef = db.collection('questions').doc(topic).collection(subtopic);
+  collectionRef.where('question', '==', question).get().then(querySnapshot => {
+      querySnapshot.forEach(doc=>{
+          doc.ref.delete().then(()=>{
+              console.log(doc.id + 'deleted');
+              deleted.push(doc.id)
+          }).catch(e=>{
+              console.log(e);
+              return res.status(400).json(e);
+          })
+      })});
+      let returnMessage = (deleted.length > 0) ? 'successfully deleted ' + deleted : 'no questions matching query found.'
+      return res.status(200).json(returnMessage);
+}

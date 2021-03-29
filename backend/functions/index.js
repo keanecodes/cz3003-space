@@ -12,7 +12,9 @@ const {
   addUserDetails,
   getAuthenticatedUser,
   updateScore,
-  getScore
+  getScore,
+  updateProgress,
+  getProgress
 } = require("./handlers/users");
 
 const {
@@ -33,7 +35,11 @@ app.post('/reset', resetPassword);
 app.post('/user', authMiddleware, addUserDetails);
 app.get('/user', authMiddleware, getAuthenticatedUser);
 app.post('/score', authMiddleware, updateScore);
-app.get('/user/score', authMiddleware, getScore)
+app.get('/user/score', authMiddleware, getScore);
+app.post('/user/progress', authMiddleware, updateProgress);
+app.get('/user/progress', authMiddleware, getProgress);
+
+
 
 //Questions route
 app.get('/topics', getTopics);

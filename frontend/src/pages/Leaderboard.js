@@ -1,28 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Stats from './Stats'
 
 
 export default function Leaderboard() {
 
   const [users, setUsers] = useState([]);
+  const [topics, setTopics] = useState([]);
+  const [subtopics, setSubtopics] = useState([]);
+  const [subtopic, setSubtopic] = useState("");
+
+  const [index, setIndex] = useState(0);
+  const [showStats, setOptionsOverlay]  = useState(false);
+  const handleShowStats = () => setOptionsOverlay(!showStats);
 
 
-  useEffect(() => {
-    
+
+  useEffect( async () => {
+
     axios.get("/user/score")
             .then(data => {
-              setUsers(cleanUp(data));
-              // console.log(cleanUp(data)) //kne: please try to remove testing console logs where possible
-            });        
-  }, []);
+              setUsers(cleanUpScore(data));
+              console.log(cleanUpScore(data))
+            });   
+
+    const top = await getTopics();
+    console.log(top[0]);
+
+    const subs = await getSubtopics(top[index]);
+    console.log(subs)
+  
+}, [index]);
 
 
-  const cleanUp = (data) => {
+
+const getTopics = async () => {
+  const res = await axios.get("/topics")
+          .then(data => {
+              setTopics(cleanUp(data));
+              return cleanUp(data);
+          });
+
+  return res;
+}
+
+const getSubtopics = async (topic) => {
+  const res = await axios.get("/subtopics", { params: topic })
+        .then(data => {
+            setSubtopics(data.data);
+            return data.data;
+        });
+
+  return res;
+}
+
+
+  const cleanUpScore = (data) => {
     let items = []
     const channel = data.data
 
     channel.forEach(element => {
       let item = {
+            id: element.userId.stringValue,
             username: element.displayName.stringValue,
             score: element.score.integerValue
         }
@@ -34,17 +73,32 @@ export default function Leaderboard() {
     return items;
   }
 
+  const cleanUp = (data) => {
+    let items = []
+    const channel = data.data
+
+    channel.forEach(element => {
+      let item = element[1];
+        
+        items.push(item);  
+      })
+    return items;
+  }
 
   const handleTopic = (e) => {
     e.preventDefault();
 
-    console.log("topic");
+    setIndex(index+1);
+    if(index >= 2) {
+      setIndex(0)
+    }
+
   }
 
-  const handleSubtopic = (e) => {
-    e.preventDefault();
-
-    console.log("stopic");
+  const handleSubtopic = (sub) => {
+    setSubtopic(sub);
+    handleShowStats();
+    
   }
 
   return (
@@ -52,8 +106,12 @@ export default function Leaderboard() {
       <div className="content" role="main" id="teams">
         <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
         <div className="sb-table-head">
-                <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">Topic</sb-var></h2>
-                <h2 onClick={handleSubtopic} className="glow-border"><sb-var data-var="id">Subtopic</sb-var></h2>
+                <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
+                {subtopics.map((sub) => (
+                  <h5 onClick={() => handleSubtopic(sub)} className="glow-border"><sb-var data-var="id">{sub}</sb-var></h5>
+                ))}
+
+
         </div>
           <div className="sb-table-head">
     
@@ -93,8 +151,9 @@ export default function Leaderboard() {
             </div>
             )) : <h1> Loading... </h1>
           }
-          
-          
+        </div>
+        <div> 
+            {showStats? <Stats handleShowStats={handleShowStats} topic={topics[index]} subtopic={subtopic} users={users}/> : null }
         </div>
       </div>
     // </div>

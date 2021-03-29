@@ -17,6 +17,7 @@ export default function GameWorldStation({ setRender }) {
   const [subtopic, setSubtopic] = useState('')
   const [difficulty, setDifficulty] = useState([])
 
+  const [tries, setTries] = useState(0);
   const [points, setPoints] = useState(0)
   const [progress, setProgress] = useState([])
   const auth = useRecoilValue(userAuth)
@@ -69,10 +70,7 @@ export default function GameWorldStation({ setRender }) {
     return res;
   }
 
-  let temp = difficulty.find((e) => {
-    return e.subtopic === "planning"
-  });
-  console.log(temp?.difficulty);
+
 
   // Extract relevant data
   const cleanUp = (data) => {
@@ -134,6 +132,12 @@ export default function GameWorldStation({ setRender }) {
     
   }
 
+  const returnDifficulty = (stopic) => {
+    return difficulty.find((e) => {
+      return e.subtopic === stopic
+         })?.difficulty
+  }
+
 
   return (
     // <div>
@@ -150,9 +154,7 @@ export default function GameWorldStation({ setRender }) {
                   <sb-task-details role="button">
                     <h4><sb-var data-var="name">{stopic}</sb-var></h4>
                     <sb-meta>
-                      <sb-var data-var="label">{difficulty.find((e) => {
-                                                  return e.subtopic === stopic
-                                                     })?.difficulty}</sb-var>
+                      <sb-var data-var="label">{returnDifficulty(stopic)}</sb-var>
                     </sb-meta>
                   </sb-task-details>
                   <sb-task-stats>
@@ -166,15 +168,11 @@ export default function GameWorldStation({ setRender }) {
                   <sb-task-details role="button">
                     <h4><sb-var data-var="name">{stopic}</sb-var></h4>
                     <sb-meta>
-                    <sb-var data-var="label">{difficulty.find((e) => {
-                                                  return e.subtopic === stopic
-                                                     })?.difficulty}</sb-var>
+                    <sb-var data-var="label">{returnDifficulty(stopic)}</sb-var>
                     </sb-meta>
                   </sb-task-details>
                   <sb-task-stats>
-                    <h3><sb-var data-var="points">{handlePoints(difficulty.find((e) => {
-                                                      return e.subtopic === stopic
-                                                        })?.difficulty)}</sb-var>pt</h3>
+                    <h3><sb-var data-var="points">{handlePoints(returnDifficulty(stopic))}</sb-var>pt</h3>
                   </sb-task-stats>
                 </div>
               )
@@ -189,7 +187,17 @@ export default function GameWorldStation({ setRender }) {
             </sb-task-details>
           </div>
           <div>
-          { showQuestions ? <Questions handlePoints={handlePoints} difficulty={difficulty} setRender={setRender} auth={auth} handleShowQuestions={handleShowQuestions} topic={topic} subtopic={subtopic} progress={progress} setProgress={setProgress}/> : null } 
+          { showQuestions ? <Questions  tries={tries} 
+                                        setTries={setTries} 
+                                        handlePoints={handlePoints} 
+                                        setRender={setRender} 
+                                        auth={auth} 
+                                        handleShowQuestions={handleShowQuestions} 
+                                        topic={topic} 
+                                        subtopic={subtopic} 
+                                        progress={progress} 
+                                        setProgress={setProgress}
+                                        returnDifficulty={returnDifficulty}/> : null } 
           </div>
       </div>
     </div>

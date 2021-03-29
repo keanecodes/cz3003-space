@@ -3,7 +3,9 @@ import Questionare from './Questionare';
 import axios from 'axios'
 
 
-const Questions = ({auth, handlePoints, difficulty, handleShowQuestions, topic, subtopic, progress, setProgress, setRender}) => {
+const Questions = ({auth, tries, setTries, handlePoints,
+                     returnDifficulty, handleShowQuestions, 
+                     topic, subtopic, progress, setProgress, setRender}) => {
 
     // const dispatch = useDispatch();
     const [questions, setQuestions] = useState([]);
@@ -37,11 +39,16 @@ const Questions = ({auth, handlePoints, difficulty, handleShowQuestions, topic, 
           // console.log(subtopic); //kne: please try to remove testing console logs where possible
           setProgress(progress.concat(subtopic));
           let id = auth.user.bio.userId;
-          let points = handlePoints(difficulty.find((e) => {
-                                      return e.subtopic === subtopic
-                                        })?.difficulty)
-          axios.post("/score",{ params: { id, points, progress } });
+          let points = handlePoints(returnDifficulty(subtopic))
+          axios.post("/score",{ params: { id, points } });
           
+          console.log(tries+" "+questions.length)
+          let totalTries = Math.round(tries/questions.length);
+
+          console.log(totalTries)
+          axios.post("/user/progress",{ params: { topic, subtopic, totalTries, id } });
+
+          setTries(0);
           setRender(true);
           // console.log(auth.user.bio.userId); //kne: please try to remove testing console logs where possible
           // console.log(progress); //kne: please try to remove testing console logs where possible
@@ -62,6 +69,8 @@ const Questions = ({auth, handlePoints, difficulty, handleShowQuestions, topic, 
         if(newIndex >= questions.length) {
             setGameEnded(true);
         }
+
+        setTries(tries+1);
     }
   
     // Extract relevant data

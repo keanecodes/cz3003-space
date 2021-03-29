@@ -2,10 +2,10 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "serve": "firebase emulators:start --only functions",
+    "serve": "firebase serve --only functions --project cz3003-space",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase deploy --only functions",
+    "deploy": "firebase deploy --only functions --project cz3003-space",
     "logs": "firebase functions:log"
   },
   "engines": {
