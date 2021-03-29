@@ -116,7 +116,7 @@ const getSubtopics = async (topic) => {
 
       <div className="content" role="main" id="teams">
         <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
-          <div className="sb-table-head" justify-content="center">
+          <div className="toolbar" justify-content="center">
               <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
               {
               subtopics.map((sub) => (
