@@ -66,8 +66,6 @@ exports.getQuestions = (req, res) => {
           
         }
       });
-      console.log('i am here')
-      console.log(data);
       return res.status(200).json(data);
     });
 }
@@ -158,6 +156,7 @@ exports.createQuestion = (req, res) => {
       return res.status(200).json( {message: "Question created"} );
     }).catch((err) => {
         console.log(err)
+        return res.status(200).json( {message: "Question created"} );
     });
 
 }
@@ -173,6 +172,8 @@ exports.editQuestion = (req, res) => {
         subtopic,
         difficulty} = req.body;
 
+    let edited = [];
+
     let collectionRef = db.collection('questions').doc(topic).collection(subtopic);
 
     collectionRef
@@ -186,15 +187,17 @@ exports.editQuestion = (req, res) => {
                 difficulty: difficulty
             })
                 .then((data) => {
-                    return res.status(200).json( {message: "Question edited"} );
+                    edited.push(doc.id)
                 }).catch((err) => {
-                console.log(err)
+                    return res.status(400).json(err)
+                    console.log(err);
             });
         })
     }
 
     )
-    return res.status(200)
+    let returnMessage = (deleted.length > 0) ? 'successfully edited ' + edited : 'no questions matching query found.'
+    return res.status(200).json(returnMessage)
 }
 
 exports.deleteQuestion = (req, res) => {
@@ -207,7 +210,9 @@ exports.deleteQuestion = (req, res) => {
     let deleted = [];
 
     let collectionRef = db.collection('questions').doc(topic).collection(subtopic);
-    collectionRef.where('question', '==', question).get().then(querySnapshot => {
+
+    collectionRef.where('question', '==', question).get()
+        .then(querySnapshot => {
         querySnapshot.forEach(doc=>{
             doc.ref.delete().then(()=>{
                 console.log(doc.id + 'deleted');

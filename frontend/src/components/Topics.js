@@ -2,27 +2,29 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 
-let topics = [];
+// let topics = [];
 
-const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
+const Form = ({handleShowForm, isTopic, topic, subtopic, setFormReturn}) => {
 
   const[formValues, setFormValues] = useState([]);
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log({...formValues, topic})
     isTopic ?
         axios.post("/create/subtopic",{ ...formValues, topic })
             .then(data => {
-              console.log(data);
+              // console.log(data);
+              setFormReturn(data.data.message);
             })
         :
         axios.post("/create/question",{ ...formValues, topic, subtopic })
             .then(data => {
-              console.log(data);
+              // console.log(data);
+              setFormReturn(data.data.message);
             });
 
     setFormValues([]);
+    // window.location.reload();
   }
 
   return (
@@ -67,7 +69,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
 
 }
 
-const EditForm = ({handleShowEditForm,  topic, subtopic}) => {
+const EditForm = ({handleShowEditForm,  topic, subtopic, setFormReturn}) => {
   console.log(topic, subtopic)
   const[formValues, setFormValues] = useState([]);
 
@@ -78,10 +80,11 @@ const EditForm = ({handleShowEditForm,  topic, subtopic}) => {
 
     axios.post("/edit/question",{ ...formValues, topic , subtopic})
         .then(data => {
-          console.log(data);
+          setFormReturn(data.data.message);
         })
 
     setFormValues([]);
+
   }
 
   return (
@@ -112,7 +115,7 @@ const EditForm = ({handleShowEditForm,  topic, subtopic}) => {
   )
 }
 
-const DeleteForm = ({handleShowEditForm,  topic, subtopic }) => {
+const DeleteForm = ({handleShowEditForm,  topic, subtopic,setFormReturn }) => {
   const[formValues, setFormValues] = useState([]);
 
   const handleSubmit = (e) => {
@@ -123,9 +126,11 @@ const DeleteForm = ({handleShowEditForm,  topic, subtopic }) => {
     axios.post("/delete/question",{ ...formValues, topic , subtopic})
         .then(data => {
           console.log(data);
+          // setFormReturn(data.data);
         })
 
     setFormValues([]);
+    // window.location.reload();
   }
 
   return (
@@ -164,10 +169,11 @@ const Input = ({label, type, formValues, setFormValues}) => {
 }
 
 export default function Topics() {
+  const [topics, setTopics] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [topicState, setTopicState] = useState('')
-  const [subtopicState, setSubtopicState] = useState('')
+  const [subtopicState, setSubtopicState] = useState('');
   const [isTopic, setIsTopic] = useState(false);
 
   const [showForm, setOverlay]  = useState(false);
@@ -177,6 +183,8 @@ export default function Topics() {
 
   const [modifyQuestions, setModifyQuestions] = useState(false);
   const [reload, setReload] = useState(false);
+
+  const [formReturn, setFormReturn] = useState('');
 
   useEffect( () => {
     (async () => {
@@ -190,16 +198,16 @@ export default function Topics() {
         let subtopicAndQuestions = []
         for (let subtopic of subtopics){
           let questions = (await getQuestions(topic, subtopic))
-          console.log(questions)
           subtopicAndQuestions.push({subtopic: subtopic, questions: questions});
         }
 
         const exists = topics.find(e => e.topic === topic);
 
         if (exists === undefined) {
-          topics.push({topic: topic, subtopics: subtopicAndQuestions});
+          let newtopics = topics;
+          newtopics.push({topic: topic, subtopics: subtopicAndQuestions});
+          setTopics(newtopics)
         }
-        console.log(topics)
         setCurrentIndex(currentIndex+1);
       }
     })();
@@ -235,7 +243,10 @@ export default function Topics() {
   };
 
   const deleteQuestion = async (topic, subtopic, question) => {
+    const res = await axios.get('delete/question', {params: {question:question,topic:topic,subtopic:subtopic
+    }}).then(data=>data.data)
 
+    return res;
   }
 
   // Extract relevant data
@@ -312,17 +323,7 @@ export default function Topics() {
         <div>
           {
             modifyQuestions ?
-
                 <div>
-                  <div className="sb-task glow-border" onClick={()=>{
-                    setShowEditForm(!showEditForm);
-                    setOverlay(false);
-                    setShowDeleteForm(false);
-                  }}>
-                    <sb-task-details role="button" >
-                      <h4><sb-var data-var="name">Edit question</sb-var></h4>
-                    </sb-task-details>
-                  </div>
 
                   <div className="sb-task glow-border" onClick={()=>{
                     handleShowForm();
@@ -331,6 +332,16 @@ export default function Topics() {
                   }}>
                     <sb-task-details role="button">
                       <h4><sb-var data-var="name">Create New Question</sb-var></h4>
+                    </sb-task-details>
+                  </div>
+
+                  <div className="sb-task glow-border" onClick={()=>{
+                    setShowEditForm(!showEditForm);
+                    setOverlay(false);
+                    setShowDeleteForm(false);
+                  }}>
+                    <sb-task-details role="button" >
+                      <h4><sb-var data-var="name">Edit question</sb-var></h4>
                     </sb-task-details>
                   </div>
 
@@ -348,12 +359,14 @@ export default function Topics() {
                   <br/>
                   <br/>
                 </div> : null}
-          { showForm ? <Form handleShowForm={handleShowForm} isTopic={isTopic} topic={topicState} subtopic={subtopicState} /> : null }
-          { showEditForm ? <EditForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} isTopic={isTopic} topic={topicState} subtopic={subtopicState} /> : null }
-          { showDeleteForm ? <DeleteForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} isTopic={isTopic} topic={topicState} subtopic={subtopicState}  /> : null }
-          <button onClick={()=>setReload(!reload)}>Refresh</button>
+          { showForm ? <Form handleShowForm={handleShowForm} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setFormReturn={setFormReturn}/> : null }
+          { showEditForm ? <EditForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setFormReturn={setFormReturn} /> : null }
+          { showDeleteForm ? <DeleteForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setFormReturn={setFormReturn} /> : null }
+          <br/><br/><br/>
+          {formReturn ? <div className="sb-task glow-border">{formReturn}</div> : null}
         </div>
       </div>
   )
 }
+
 
