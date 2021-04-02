@@ -8,10 +8,8 @@ import {
   PLAYER_WIDTH,
   PLAYER_START_X,
   PLAYER_START_Y,
-  MIRA_PLAYER_START_X,
-  MIRA_PLAYER_START_Y,
 } from './constants';
-import { movePlayer } from './miraMovement';
+import { movePlayer } from './movement';
 import { animateMovement } from './animation';
 
 import firebase from "firebase/app";
