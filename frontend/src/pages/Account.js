@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { contentState } from '../recoil/atoms';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { contentState } from '../recoil/atoms'
 import { formValuesState, userAuth, authorise, resetPassord } from '../recoil/users'
+import { FaEye, FaEyeSlash } from "react-icons/fa"
 
 export default function Account({view, history}) {
 
   const formValues = useRecoilValue(formValuesState)
-  const setUserAuth = useSetRecoilState(userAuth)
   const setPageContent = useSetRecoilState(contentState)
+  const [passText, setPassText] = useState("password");
+  const setUserAuth = useSetRecoilState(userAuth)
   const [error, setErrorUI] = useState(false)
 
   const handleSubmit = async e => {
@@ -64,7 +66,7 @@ export default function Account({view, history}) {
         
         {view == "register" ? <Input label="name" type="text" tips={false}/> : null}
         <Input label="email" type="text" tips={false}/>
-        {view != "reset" ? <Input label="password" type="password" tips={false}/> : null}
+        {view != "reset" ? <Input label="password" type={passText} setVisibleType={setPassText} tips={false} icon={FaEye}/> : null}
         
         <input className="glow-border" form="login-form" type="submit" value="Enter"/>
         <form id="login-form" onSubmit={handleSubmit}/>
@@ -80,17 +82,49 @@ export default function Account({view, history}) {
   )
 }
 
-const Input = ({label, type, tips}) => {
+const Input = ({label, type, setVisibleType, tips, icon}) => {
 
   const[formValues, setFormValues] = useRecoilState(formValuesState)
+  const[passText, setPassText] = useState(false)
 
   const handleChange = e => setFormValues({...formValues, [`${label}`]: e.target.value} )
+  const handleTogglePass = () => {
+    setPassText(!passText);
+    passText == false ? setVisibleType("text") : setVisibleType("password");
+  }
+  
+  const divPassStyle = {
+    display: "flex",
+    flexDirection: "row",
+  }
+
+  const passBtnStyle = {
+    background: "transparent",
+    margin: "1.8rem 1rem 1.8rem -6rem",
+    padding: "0rem 1.5rem",
+    paddingTop: "0.3rem",
+    float: "right",
+    color: "var(--row-border-color)",
+    fontSize: "2rem",
+    border: "none",
+    outline: "none",
+  }
 
   return (
-    <label>
-      <h4>{label}</h4>
-      <input value={formValues[`${label}`]} className="glow-border" type={type} form="login-form" onChange={handleChange}/>
-      {tips == true ? <span>If you don't have a team key, you can create a new team.</span> : null}
-    </label>
+    <div style={icon ? divPassStyle : null}>
+      <label style={icon ? {flex: 1} : null}>
+        <h4>{label}</h4>
+        <input value={formValues[`${label}`]} className="glow-border" type={type} form="login-form" onChange={handleChange}/>
+        {tips == true ? <span>If you don't have a team key, you can create a new team.</span> : null}
+      </label>
+      {icon ? 
+        <button onClick={handleTogglePass} style={passBtnStyle}>
+          { passText 
+          ? <FaEyeSlash/>
+          : <FaEye/>}
+        </button>
+        : null
+      }
+    </div>
   )
 }
