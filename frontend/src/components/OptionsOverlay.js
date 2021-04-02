@@ -1,7 +1,12 @@
 import React, { useState } from 'react'
+import Phaser, { Scene } from "phaser";
 import { useRecoilState, useRecoilValue } from 'recoil'
+import MiraGame from '../phaser/miraScene';
+import PolusGame from '../phaser/polusScene';
+import MyGame from '../phaser/scene';
 import { userAuth, sendUserServerUpdate } from '../recoil/users'
 import { spriteIdMap } from "../utils/importer";
+
 
 
 export default function OptionsOverlay({handleShowOpt}) {
@@ -130,10 +135,10 @@ const MapSelectionsPurpose = ({customGame}) => {
         ? <p>Select 1 or multiple topic(s) for the custom game</p>
         : <p>Revisit cleared World Map (Topic Revisit)</p>
       }
-      <div className="options-selection-container">
+      <div id ="game" className="options-selection-container">
         <button className="glow-border">The Skeld</button>
-        <button className="glow-border">Mira HQ</button>
-        <button className="glow-border">Polus</button>
+        <button className="glow-border"onClick={callMiraGame()}>Mira HQ</button>
+        <button className="glow-border"onClick={callPolusGame()}>Polus</button>
         <button className="glow-border">Airship</button>
         <button className="glow-border">Island</button>
       </div>
@@ -147,4 +152,17 @@ const MapSelectionsPurpose = ({customGame}) => {
       }
     </>
   )
+}
+
+
+function callMiraGame(){
+  Phaser.Scene.call(MiraGame);
+  
+}
+
+
+
+
+function callPolusGame() {
+  Phaser.Scene.call(PolusGame);
 }
