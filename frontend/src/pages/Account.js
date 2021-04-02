@@ -27,10 +27,13 @@ export default function Account({view, history}) {
         // })
         // redirect
         if (data) {
+          console.log(data)
           setUserAuth({
             isAuthenticated: true,
             user: data,
-            roomNum: "LOBBY"
+            //todo: update backend to read gameplay
+            roomNum: "LOBBY", 
+            world: "The Skeld"
           })
 
           // redirect to dashboard

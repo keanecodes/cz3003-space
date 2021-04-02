@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
-import Phaser, { Scene } from "phaser";
 import { useRecoilState, useRecoilValue } from 'recoil'
-import MiraGame from '../phaser/miraScene';
-import PolusGame from '../phaser/polusScene';
-import MyGame from '../phaser/scene';
 import { userAuth, sendUserServerUpdate } from '../recoil/users'
-import { spriteIdMap } from "../utils/importer";
+import { spriteIdMap, sceneIdMap } from "../utils/importer";
 
 
 
@@ -21,7 +17,7 @@ export default function OptionsOverlay({handleShowOpt}) {
         <CustomGameToggle state={customGame} toggleState={setCustomGame} />
         
         <GoAnotherRoomField customGame={customGame} closeDialog={handleShowOpt}/>
-        <MapSelectionsPurpose customGame={customGame}/>
+        <MapSelectionsPurpose customGame={customGame} closeDialog={handleShowOpt}/>
       </div>
     </div>
   )
@@ -33,7 +29,7 @@ const OptionsHeader = ({closeDialog}) => {
     <div className="sb-task-header dashed" data-click onClick={closeDialog}>
       <div className="game-header-title">
         <h2>Requirements Engineering</h2>
-        <div className="sb-meta">The Skeld - Room: {auth?.roomNum}</div>
+        <div className="sb-meta">{auth?.world ? auth.world : "The Skeld"} - Room: {auth?.roomNum}</div>
       </div>
       <h3>Options</h3>
     </div>
@@ -128,19 +124,29 @@ const GoAnotherRoomField = ({customGame, closeDialog}) => {
   )
 }
 
-const MapSelectionsPurpose = ({customGame}) => {
+const MapSelectionsPurpose = ({customGame, closeDialog}) => {
+  const [auth, setAuth] = useRecoilState(userAuth)
+  const handleGameMapUpdate = e => {
+    setAuth({...auth, world: e.target.innerText})
+    closeDialog()
+  }
+
   return (
     <>
       { customGame 
         ? <p>Select 1 or multiple topic(s) for the custom game</p>
         : <p>Revisit cleared World Map (Topic Revisit)</p>
       }
-      <div id ="game" className="options-selection-container">
-        <button className="glow-border">The Skeld</button>
-        <button className="glow-border"onClick={callMiraGame()}>Mira HQ</button>
-        <button className="glow-border"onClick={callPolusGame()}>Polus</button>
-        <button className="glow-border">Airship</button>
-        <button className="glow-border">Island</button>
+      <div className="options-selection-container">
+        { Object.keys(sceneIdMap).map( (name, i) =>
+            <button 
+              key={`map-scene-btn-${i}`}
+              className="glow-border"
+              onClick={customGame == false ? handleGameMapUpdate : null}>
+              {name}
+            </button>
+          )
+        }
       </div>
       { customGame 
         ?(<><br/>
@@ -152,17 +158,4 @@ const MapSelectionsPurpose = ({customGame}) => {
       }
     </>
   )
-}
-
-
-function callMiraGame(){
-  Phaser.Scene.call(MiraGame);
-  
-}
-
-
-
-
-function callPolusGame() {
-  Phaser.Scene.call(PolusGame);
 }
