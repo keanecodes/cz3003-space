@@ -3,19 +3,17 @@ import Phaser from "phaser";
 import MyGame from "../phaser/scene";
 import { useRecoilValue } from 'recoil'
 import { userAuth } from '../recoil/users'
-import  MiraGame  from "../phaser/miraScene";
-import  PolusGame  from "../phaser/polusScene";
-import  AirshipGame  from "../phaser/airshipScene";
-import  IslandGame  from "../phaser/islandScene";
 
 export default function GameInstance({setGame, game }) {
   const auth = useRecoilValue(userAuth)
   const [instanceRoom, setInstanceRoom] = useState("00000000")
+  const [instanceWorld, setInstanceWorld] = useState("The Skeld")
   useEffect(() => {
     if (game == null && auth.isAuthenticated) {
       const user = {
         ...auth?.user?.bio,
-        roomNum: auth?.roomNum
+        roomNum: auth?.roomNum,
+        world: auth?.world
       }
       if (user.roomNum == auth?.roomNum) {
         var instance = new Phaser.Game({
@@ -24,7 +22,7 @@ export default function GameInstance({setGame, game }) {
           parent: "phaser",
           width: 800,
           height: 600,
-          scene: [MyGame],
+          scene: MyGame,
           physics: {
             default: "arcade",
             gravity: { y: 0 },
@@ -33,12 +31,13 @@ export default function GameInstance({setGame, game }) {
             postBoot: function (game) {
               setGame(game);
               setInstanceRoom(user?.roomNum)
+              setInstanceWorld(user?.world)
             },
           },
         });
       }
       instance.config.user = user;
-    } else if (game && instanceRoom != auth?.roomNum) {
+    } else if (game && (instanceRoom != auth?.roomNum || instanceWorld != auth?.world)) {
       game.destroy(true)
       setGame(null)
     }

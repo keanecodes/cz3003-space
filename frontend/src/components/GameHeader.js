@@ -53,7 +53,7 @@ export default function GameHeader({render, setRender}) {
       <div className="game-header-title">
         <h2><sb-var data-var="name">Room: {auth?.roomNum}</sb-var></h2>
         <div className="sb-meta">
-          <sb-var data-var="label">The Skeld - Requirements Engineering</sb-var>
+          <sb-var data-var="label">{auth?.world} - Requirements Engineering</sb-var>
         </div>
       </div>
       <button onClick={handleShowOpt}>Options</button>

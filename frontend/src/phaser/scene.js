@@ -1,16 +1,13 @@
 import Phaser from 'phaser';
-import shipImg from '../assets/ship.png';
-import { spriteIdMap } from '../utils/importer'
+import { spriteIdMap, sceneIdMap } from '../utils/importer'
 import {
   PLAYER_SPRITE_HEIGHT,
   PLAYER_SPRITE_WIDTH,
   PLAYER_HEIGHT,
   PLAYER_WIDTH,
-  PLAYER_START_X,
-  PLAYER_START_Y,
-} from './constants';
-import { movePlayer } from './movement';
-import { animateMovement } from './animation';
+} from "./constants";
+import { movePlayer } from "./movement";
+import { animateMovement } from "./animation";
 
 import firebase from "firebase/app";
 import "firebase/database";
@@ -29,7 +26,10 @@ export class MyGame extends Phaser.Scene {
     this.RTdatabase = firebase.database();
     this.firestore = firebase.firestore();
     this.roomNumber = "00000000";
-    this.player = {}
+    this.world = "The Skeld";
+    this.PLAYER_START_X = 330;
+    this.PLAYER_START_Y = 100;
+    this.player = {};
     this.playerId = Math.random().toString().split('.')[1];
     this.playerName = "";
     this.roomAddress = "";
@@ -41,7 +41,9 @@ export class MyGame extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("ship", shipImg);
+    Object.keys(sceneIdMap).map(id => {
+      this.load.image(id, sceneIdMap[id].img);
+    })
     Object.keys(spriteIdMap).map(id => {
       this.load.spritesheet(id, spriteIdMap[id].sprite, {
         frameWidth: PLAYER_SPRITE_WIDTH,
@@ -54,12 +56,18 @@ export class MyGame extends Phaser.Scene {
       this.playerName = this.game.config.user.displayName;
       this.playerSpriteColor = this.game.config.user.sprite;
       // console.log(this.playerSprite)
+      this.roomNumber = this.game.config.user.roomNum;
+      if (this.game.config.user.world) {
+        this.world = this.game.config.user.world;
+        this.PLAYER_START_X = sceneIdMap[this.world].startX;
+        this.PLAYER_START_Y = sceneIdMap[this.world].startY;
+      }
     }
   }
 
   create() {
-    const ship = this.add.image(0, 0, 'ship');
-    this.player.sprite = this.add.container(PLAYER_START_X, PLAYER_START_Y)
+    const ship = this.add.image(0, 0, this.world);
+    this.player.sprite = this.add.container(this.PLAYER_START_X, this.PLAYER_START_Y)
     var sprite = this.add.sprite(0, 0, this.playerSpriteColor);
     sprite.displayHeight = PLAYER_HEIGHT;
     sprite.displayWidth = PLAYER_WIDTH;
@@ -69,7 +77,7 @@ export class MyGame extends Phaser.Scene {
     this.player.sprite.add(sprite);
     this.player.sprite.add(txtName);
 
-    npc.sprite = this.add.container(PLAYER_START_X-500, PLAYER_START_Y-50);
+    npc.sprite = this.add.container(this.PLAYER_START_X-500, this.PLAYER_START_Y-50);
     var npcsprite1 = this.add.sprite(0, 0, "npc");
     npcsprite1.displayHeight = PLAYER_HEIGHT;
     npcsprite1.displayWidth = PLAYER_WIDTH;
@@ -108,7 +116,7 @@ export class MyGame extends Phaser.Scene {
       pressedKeys = pressedKeys.filter((key) => key !== e.code);
     });
 
-    this.roomAddress = this.roomNumber == 'LOBBY' ? 'lobby/players/' : 'rooms/' + this.roomNumber + '/players/';
+    this.roomAddress = this.roomNumber == 'LOBBY' ? 'lobby/' + this.world + '/players/' : 'rooms/' + this.world + '/' + this.roomNumber + '/players/';
 
     const thisPlayerRTRef = this.RTdatabase.ref(this.roomAddress + this.playerId);
     thisPlayerRTRef.onDisconnect().set({});
@@ -124,9 +132,9 @@ export class MyGame extends Phaser.Scene {
     const gameplayFirestoreRef = this.firestore.collection('gameplays');
     gameplayFirestoreRef.doc(this.playerId).set({
       checkPoint: "", //Game Master
-      checkPosX: PLAYER_START_X, //-170,
-      checkPosY: PLAYER_START_Y, //50,
-      world: "The Skeld",
+      checkPosX: this.PLAYER_START_X, //-170,
+      checkPosY: this.PLAYER_START_Y, //50,
+      world: this.world,
       room: this.roomNumber
     })
     const playersRef = this.RTdatabase.ref(this.roomAddress);
@@ -174,7 +182,7 @@ export class MyGame extends Phaser.Scene {
 
   update() {
     this.scene.scene.cameras.main.centerOn(this.player.sprite.x, this.player.sprite.y);
-    movePlayer(pressedKeys, this.player.sprite);
+    movePlayer(pressedKeys, this.player.sprite, this.world);
     animateMovement("run" + this.playerSpriteColor, pressedKeys, this.player.sprite.list[0]);
 
     if (Math.round(this.player.sprite.x) != this.previousX || Math.round(this.player.sprite.y) != this.previousY) {
