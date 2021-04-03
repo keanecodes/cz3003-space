@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Form from '../components/Form';
+import { useRecoilValue } from 'recoil'
+import { userAuth } from '../recoil/users'
 
 let topics = [];
 
@@ -12,6 +14,9 @@ export default function Topics() {
   const [isTopic, setIsTopic] = useState(false);
   const handleShowForm = () => setOverlay(!showForm)
   const [reload, setReload] = useState(false)
+  const auth = useRecoilValue(userAuth)
+  const isAuthUser = auth?.isAuthenticated
+  const isAuthProf = isAuthUser && auth?.user.bio.isProfessor
 
   useEffect( () => {
     (async () => {
@@ -84,7 +89,7 @@ export default function Topics() {
   const handleTopic = (topic) => {
     setTopicState(topic);
     setIsTopic(true);
-    handleShowForm();
+    if(isAuthProf==true){handleShowForm();}//check if prof
 
   }
 
@@ -92,7 +97,7 @@ export default function Topics() {
     setTopicState(topic);
     setSubtopicState(subtopic);
     setIsTopic(false);
-    handleShowForm();
+    if(isAuthProf==true){handleShowForm();}//check if prof
 
   }
 

@@ -41,34 +41,40 @@ const isWithinMovementBoundaries = (x, y, map) => {
   return !mapBounds[y] ? true : !mapBounds[y].includes(x);
 };
 
-export const movePlayer = (keys, player, map) => {
+export const movePlayer = (keys, player, map, isProf) => {//added isProf as a parameter
   const [SHIP_WIDTH, SHIP_HEIGHT] = findMapConstant(map, "ship");
 
   const absPlayerX = player.x + SHIP_WIDTH / 2;
   const absPlayerY = player.y + SHIP_HEIGHT / 2 + 20;
-  if (
-    keys.includes('ArrowUp') &&
-    isWithinMovementBoundaries(absPlayerX, absPlayerY - PLAYER_SPEED, map)
-  ) {
+  if (keys.includes('ArrowUp') && isProf == true) {
     player.y = player.y - PLAYER_SPEED;
   }
-  if (
-    keys.includes('ArrowDown') &&
-    isWithinMovementBoundaries(absPlayerX, absPlayerY + PLAYER_SPEED, map)
-  ) {
+  else if(keys.includes('ArrowUp') && isWithinMovementBoundaries(absPlayerX, absPlayerY - PLAYER_SPEED)){
+    player.y = player.y - PLAYER_SPEED;
+  }
+
+
+  if(isProf == true && keys.includes('ArrowDown')) {
     player.y = player.y + PLAYER_SPEED;
   }
-  if (
-    keys.includes('ArrowLeft') &&
-    isWithinMovementBoundaries(absPlayerX - PLAYER_SPEED, absPlayerY, map)
-  ) {
+  else if (keys.includes('ArrowDown') && isWithinMovementBoundaries(absPlayerX, absPlayerY + PLAYER_SPEED)){
+    player.y = player.y + PLAYER_SPEED;
+  }
+  
+  if(isProf == true && keys.includes('ArrowLeft')) {
     player.x = player.x - PLAYER_SPEED;
     player.list[0].flipX = true;
   }
-  if (
-    keys.includes('ArrowRight') &&
-    isWithinMovementBoundaries(absPlayerX + PLAYER_SPEED, absPlayerY, map)
-  ) {
+  else if (keys.includes('ArrowLeft') && isWithinMovementBoundaries(absPlayerX - PLAYER_SPEED, absPlayerY)){
+    player.x = player.x - PLAYER_SPEED;
+    player.list[0].flipX = true;
+  }
+  
+  if(isProf == true && keys.includes('ArrowRight')) {
+    player.x = player.x + PLAYER_SPEED;
+    player.list[0].flipX = true;
+  }
+  else if (keys.includes('ArrowRight') && isWithinMovementBoundaries(absPlayerX + PLAYER_SPEED, absPlayerY)){
     player.x = player.x + PLAYER_SPEED;
     player.list[0].flipX = false;
   }

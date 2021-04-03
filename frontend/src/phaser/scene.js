@@ -37,6 +37,7 @@ export class MyGame extends Phaser.Scene {
     this.previousX = 0;
     this.previousY = 0;
     this.updatePlayerPositions.bind(this.updatePlayerPositions);
+    this.isProfessor = false;
     this.allPlayers = {};
   }
 
@@ -56,6 +57,7 @@ export class MyGame extends Phaser.Scene {
       this.playerName = this.game.config.user.displayName;
       this.playerSpriteColor = this.game.config.user.sprite;
       // console.log(this.playerSprite)
+      this.isProfessor = this.game.config.user.isProfessor;//to check if user is the prof
       this.roomNumber = this.game.config.user.roomNum;
       if (this.game.config.user.world) {
         this.world = this.game.config.user.world;
@@ -69,9 +71,15 @@ export class MyGame extends Phaser.Scene {
     const ship = this.add.image(0, 0, this.world);
     this.player.sprite = this.add.container(this.PLAYER_START_X, this.PLAYER_START_Y)
     var sprite = this.add.sprite(0, 0, this.playerSpriteColor);
+    if(this.isProfessor){
+      sprite.visible=false;
+    }//make sprite invisible for prof
     sprite.displayHeight = PLAYER_HEIGHT;
     sprite.displayWidth = PLAYER_WIDTH;
     var txtName = this.add.text(0, 0, this.playerName);
+    if(this.isProfessor){
+      txtName.visible=false;
+    }//make name invisible for prof
     txtName.font = "Arial";
     txtName.setOrigin(0.5, 2.3);
     this.player.sprite.add(sprite);
@@ -92,11 +100,12 @@ export class MyGame extends Phaser.Scene {
     this.physics.world.enable(sprite);
 
     npcsprite1.body.onWorldBounds = true;
-
+    
+    if(this.isProfessor==false){
     this.physics.add.collider(sprite, npcsprite1, function (npcsprite1) {
       console.log("Collided with npc");
       // insert pop up for qsn here
-    });
+    });}//questions only for students
 
     Object.keys(spriteIdMap).map(id => {
       this.anims.create({
@@ -116,7 +125,7 @@ export class MyGame extends Phaser.Scene {
       pressedKeys = pressedKeys.filter((key) => key !== e.code);
     });
 
-    this.roomAddress = this.roomNumber == 'LOBBY' ? 'lobby/' + this.world + '/players/' : 'rooms/' + this.world + '/' + this.roomNumber + '/players/';
+    this.roomAddress = this.roomNumber == 'LOBBY' ? 'lobby/' + this.world + '/players/' : 'rooms/' + this.world + '/' + this.roomNumber + '/players/';//link for custom game
 
     const thisPlayerRTRef = this.RTdatabase.ref(this.roomAddress + this.playerId);
     thisPlayerRTRef.onDisconnect().set({});
@@ -167,9 +176,11 @@ export class MyGame extends Phaser.Scene {
         var newCharacter = {};
         newCharacter.sprite = this.add.container(newCharacterData.x, newCharacterData.y)
         var spriteConfig = this.add.sprite(0, 0, newCharacterData.spriteColor);
+        
         spriteConfig.displayHeight = PLAYER_HEIGHT;
         spriteConfig.displayWidth = PLAYER_WIDTH;
         var txtNameConfig = this.add.text(0, 0, newCharacterData.playerName);
+        
         txtNameConfig.font = "Arial";
         txtNameConfig.setOrigin(0.5, 2.3);
         newCharacter.sprite.add(spriteConfig);
@@ -182,7 +193,7 @@ export class MyGame extends Phaser.Scene {
 
   update() {
     this.scene.scene.cameras.main.centerOn(this.player.sprite.x, this.player.sprite.y);
-    movePlayer(pressedKeys, this.player.sprite, this.world);
+    movePlayer(pressedKeys, this.player.sprite, this.world,this.isProfessor);
     animateMovement("run" + this.playerSpriteColor, pressedKeys, this.player.sprite.list[0]);
 
     if (Math.round(this.player.sprite.x) != this.previousX || Math.round(this.player.sprite.y) != this.previousY) {
