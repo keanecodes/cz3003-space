@@ -86,8 +86,9 @@ export default function Account({view, history}) {
         }
         
         {view == "register" ? <Input label="name" type="text" tips={false}/> : null}
-        {view != "reset" ? <Input label="password" type={passText} setVisibleType={setPassText} tips={false} icon={true}/> : null}
         <Input label="email" type="text" tips={false}/>
+        {view != "reset" ? <Input label="password" type={passText} setVisibleType={setPassText} tips={false} icon={true}/> : null}
+
         {sendingRequest ? <img src={LoadingIcon} alt="" style={{height:'50px'}}/>: null}
 
         {isError ? <p>{errorData}</p>:null}
