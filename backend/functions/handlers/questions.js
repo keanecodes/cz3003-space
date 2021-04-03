@@ -196,7 +196,7 @@ exports.editQuestion = (req, res) => {
     }
 
     )
-    let returnMessage = (deleted.length > 0) ? 'successfully edited ' + edited : 'no questions matching query found.'
+    let returnMessage = (edited.length > 0) ? 'successfully edited ' + edited : 'no questions matching query found.'
     return res.status(200).json(returnMessage)
 }
 

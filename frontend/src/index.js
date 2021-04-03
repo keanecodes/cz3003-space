@@ -15,20 +15,20 @@ import Topics from "./components/Topics";
 const hist = createBrowserHistory()
 
 ReactDOM.render(
-  // <RecoilRoot>
-  //   <Router history={hist}>
-  //     <Switch>
-  //       <Route
-  //         path="/"
-  //         render={props => {
-  //           return <Container {...props}/>;
-  //         }}
-  //       />
-  //     </Switch>
-  //     <Route render={() => <Redirect to="/" />} />
-  //   </Router>
-  // </RecoilRoot>
-    <Topics/>
+  <RecoilRoot>
+    <Router history={hist}>
+      <Switch>
+        <Route
+          path="/"
+          render={props => {
+            return <Container {...props}/>;
+          }}
+        />
+      </Switch>
+      <Route render={() => <Redirect to="/" />} />
+    </Router>
+  </RecoilRoot>
+    // <Topics/>
   ,document.getElementById("root")
 );
 
