@@ -45,8 +45,12 @@ app.post('/create/question', createQuestion);
 app.post('/edit/question', editQuestion);
 app.post('/delete/question', deleteQuestion);
 
+app.post('/score', authMiddleware, updateScore);
+app.get('/user/score', authMiddleware, getScore)
+
+
+
 
 // exports.getDonations = functions.https.onRequest((req, res) => { });
 // https://baseurl.com/api/_____
 exports.api = functions.region("asia-southeast2").https.onRequest(app);
-

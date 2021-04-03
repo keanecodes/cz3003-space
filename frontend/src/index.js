@@ -8,8 +8,7 @@ import { createBrowserHistory } from "history";
 import { RecoilRoot } from "recoil";
 
 import './index.css';
-import Container from "./components/Container";
-import Topics from "./components/Topics";
+import App from "./App";
 // import reportWebVitals from './reportWebVitals';
 
 const hist = createBrowserHistory()
@@ -21,14 +20,13 @@ ReactDOM.render(
         <Route
           path="/"
           render={props => {
-            return <Container {...props}/>;
+            return <App {...props}/>;
           }}
         />
       </Switch>
       <Route render={() => <Redirect to="/" />} />
     </Router>
   </RecoilRoot>
-    // <Topics/>
   ,document.getElementById("root")
 );
 

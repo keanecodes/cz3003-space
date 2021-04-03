@@ -43,9 +43,7 @@ exports.getSubtopics = (req, res) => {
 }
 
 exports.getQuestions = (req, res) => {
-    
     const {topic, subtopic} = req.query;
-
     const data = [];
     db.collection('questions')
     .doc(topic)
@@ -101,6 +99,7 @@ exports.getSubtopicsDifficulty = (req, res) => {
 }
 
 exports.createSubtopic = (req, res) => {
+
   const {question, 
           correct_answer, 
           incorrect_answer1, 

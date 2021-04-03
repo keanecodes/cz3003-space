@@ -28,7 +28,7 @@ export default function Toolbar({menuClick, history}) {
     location.reload()
   }
   const isAuthUser = auth?.isAuthenticated
-  const isAuthProf = isAuthUser && auth?.user.bio.isProfessor
+  const isAuthProf = isAuthUser && auth?.user?.bio?.isProfessor
 
   return (
     <div className="toolbar">
@@ -38,7 +38,7 @@ export default function Toolbar({menuClick, history}) {
         <Link to={isAuthUser ? "/game" : "/login"} onClick={isAuthUser ? null : menuClick} data-tolink="login" style={{width: "100%", height: "100%", display: "block", border: "none"}} />
       </div>
       <Link to={isAuthUser ? "/topics" : "/login"} data-tolink={isAuthUser ? "challenges" : "login"} onClick={menuClick}>Topics</Link> 
-      <Link to="/login" className="sb-login-link" data-tolink="login" data-team-name={isAuthUser ? auth.user.bio.displayName : null} onClick={isAuthUser ? onLogout : menuClick}/> 
+      <Link to="/login" className="sb-login-link" data-tolink="login" data-team-name={isAuthUser ? auth?.user?.bio?.displayName : null} onClick={isAuthUser ? onLogout : menuClick}/> 
     </div>
   )
 }
