@@ -233,6 +233,29 @@ exports.deleteQuestion = (req, res) => {
         });
 }
 
+  collectionRef
+      .where('question', '==', question).get()
+      .then(querySnapshot => {
+              querySnapshot.forEach(doc => {
+                  collectionRef.doc(doc.id).update({
+                      question: newQuestion,
+                      correct_answer: correct_answer,
+                      incorrect_answers: [incorrect_answer1, incorrect_answer2, incorrect_answer3],
+                      difficulty: difficulty
+                  })
+                      .then((data) => {
+                          edited.push(doc.id)
+                          let returnMessage = (edited.length > 0) ? 'successfully edited ' + edited : 'no questions matching query found.'
+                          return res.status(200).json(returnMessage)
+                      }).catch((err) => {
+                      console.log(err);
+                      return res.status(400).json(err)
+                  });
+              })
+          }
+
+      )
+}
 
 exports.deleteQuestion = (req, res) => {
   const {
@@ -244,16 +267,24 @@ exports.deleteQuestion = (req, res) => {
   let deleted = [];
 
   let collectionRef = db.collection('questions').doc(topic).collection(subtopic);
-  collectionRef.where('question', '==', question).get().then(querySnapshot => {
-      querySnapshot.forEach(doc=>{
-          doc.ref.delete().then(()=>{
-              console.log(doc.id + 'deleted');
-              deleted.push(doc.id)
-          }).catch(e=>{
-              console.log(e);
-              return res.status(400).json(e);
-          })
-      })});
-      let returnMessage = (deleted.length > 0) ? 'successfully deleted ' + deleted : 'no questions matching query found.'
-      return res.status(200).json(returnMessage);
+
+  collectionRef.where('question', '==', question).get()
+      .then(querySnapshot => {
+          if (querySnapshot.docs.length > 0){
+              querySnapshot.forEach(doc=>{
+                  doc.ref.delete().then(()=>{
+                      console.log(doc.id + 'deleted');
+                      deleted.push(doc.id);
+
+                      let returnMessage = (deleted.length > 0) ? 'successfully deleted file' : 'no questions matching query found.'
+                      return res.status(200).json(returnMessage);
+                  }).catch(e=>{
+                      return res.status(400).json(e);
+                  })
+              })
+          }
+          else{
+              return res.status(400).json('no questions matching query found.')
+          }
+      });
 }
