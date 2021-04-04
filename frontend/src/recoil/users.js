@@ -1,4 +1,4 @@
-import { atom } from 'recoil'
+import { atom, selector, useRecoilState } from 'recoil'
 import axios from 'axios'
 import jwtDecode from "jwt-decode";
 
@@ -65,7 +65,9 @@ export const authorise = (method, userData) => {
       return getUserData()
     })
     .catch(err => {
-      console.error(err)
+      let error = new Error(method + 'failed');
+      error.data = {...err.response, message:err.message}
+      throw error;
     });
 }
 
@@ -78,6 +80,17 @@ export const logoutUser = () => {
 
 export const getUserData = () => {
   return axios.get('/user');
+}
+
+export const sendUserServerUpdate = reqBody => {
+  return axios
+  .post('/user', reqBody)
+  .then(res => {
+    return getUserData()
+  })
+  .catch(err => {
+    console.error(err)
+  });
 }
 
 // login set localStorage
@@ -96,5 +109,8 @@ export const resetPassord = email => {
     .catch((err) => {
       // message.error(err.response.data.message)
       console.error(err.response.data);
+      let error = new Error('Reset failed');
+      error.data = err.response.data
+      throw error;
     });
 }

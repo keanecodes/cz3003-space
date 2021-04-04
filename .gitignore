@@ -111,3 +111,5 @@ node_modules/
 .env
 firebase-adminsdk.json
 config.js
+/frontend/src/components/Topic.js
+/frontend/src/components/TopicsTest.js
