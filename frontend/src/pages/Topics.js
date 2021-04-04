@@ -46,7 +46,8 @@ const Form = ({handleShowForm, isTopic, topic, subtopic, setFormReturn, setReloa
               ):(
                   <div>
                     <h2>Create New Question</h2>
-                    <h4>Selected sub-topic: {subtopic}</h4>
+                    <h4>Selected sub-topic: </h4>
+                    <h4>{subtopic}</h4>
                   </div>
               )}
 
@@ -99,7 +100,8 @@ const EditForm = ({handleShowEditForm,  topic, subtopic, setFormReturn, setReloa
           <div className="sb-task-header dashed" data-click onClick={handleShowEditForm}>
             <div className="game-header-title">
               <h2>Edit Question</h2>
-              <h4>Selected sub-topic: {subtopic}</h4>
+              <h4>Selected sub-topic: </h4>
+              <h4>{subtopic}</h4>
             </div>
           </div>
 
@@ -146,7 +148,8 @@ const DeleteForm = ({handleShowEditForm,  topic, subtopic,setFormReturn, setRelo
           <div className="sb-task-header dashed" data-click onClick={handleShowEditForm}>
             <div className="game-header-title">
               <h2>Delete Question</h2>
-              <h4>Selected sub-topic: {subtopic}</h4>
+              <h4>Selected sub-topic: </h4>
+              <h4>{subtopic}</h4>
             </div>
           </div>
 
