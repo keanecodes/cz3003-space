@@ -231,7 +231,7 @@ exports.deleteQuestion = (req, res) => {
                 return res.status(400).json('no questions matching query found.')
             }
         });
-}
+
 
   collectionRef
       .where('question', '==', question).get()
