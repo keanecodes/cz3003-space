@@ -690,6 +690,7 @@ input[type="checkbox"]:checked::after {
   color: var(--normal-text-color);
   background-color: rgba(0, 0, 0, 0.2);
   padding: 1ex;
+  cursor: pointer;
 }
 
 .account-page {

@@ -5,6 +5,7 @@ import { contentState } from '../recoil/atoms'
 import { formValuesState, userAuth, authorise, resetPassord } from '../recoil/users'
 import { RiEyeLine, RiEyeCloseLine } from "react-icons/ri"
 import LoadingIcon from '../assets/loader_rings.svg'
+import { sceneIdMap } from "../utils/importer";
 
 export default function Account({view, history}) {
 
@@ -43,7 +44,8 @@ export default function Account({view, history}) {
             user: data,
             //todo: update backend to read gameplay
             roomNum: "LOBBY", 
-            world: "The Skeld"
+            world: "The Skeld",
+            worlds: Object.keys(sceneIdMap) // worlds: ["The Skeld", "Mira HQ", "Airship"]
           })
 
           // redirect to dashboard

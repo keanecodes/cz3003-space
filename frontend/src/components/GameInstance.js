@@ -13,7 +13,9 @@ export default function GameInstance({setGame, game }) {
       const user = {
         ...auth?.user?.bio,
         roomNum: auth?.roomNum,
-        world: auth?.world
+        world: auth?.world,
+        worlds: auth?.worlds,
+        topics: auth?.topics
       }
       if (user.roomNum == auth?.roomNum) {
         var instance = new Phaser.Game({

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue, useRecoilCallback } from 'recoil'
 import { userAuth, sendUserServerUpdate } from '../recoil/users'
+import { worldState } from '../recoil/atoms'
 import { spriteIdMap, sceneIdMap } from "../utils/importer";
 import styled from 'styled-components'
 
@@ -14,11 +15,11 @@ export default function OptionsOverlay({handleShowOpt}) {
       <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
         <OptionsHeader closeDialog={handleShowOpt}/>
         
-        <CustomGameTab state={tab} changeTab={setTab} closeDialog={handleShowOpt}/>
+        <OptionsTabs state={tab} changeTab={setTab} closeDialog={handleShowOpt}/>
         
         <ColourChoices state={tab} closeDialog={handleShowOpt}/>
-        <MapSelectionsPurpose state={tab} closeDialog={handleShowOpt}/>
-        <GoAnotherRoomField state={tab} closeDialog={handleShowOpt}/>
+        <Worlds state={tab} closeDialog={handleShowOpt}/>
+        <CustomGame state={tab} closeDialog={handleShowOpt}/>
       </div>
     </div>
   )
@@ -77,7 +78,128 @@ const ColourChoices = ({state, closeDialog}) => {
   )
 }
 
-const CustomGameTab = ({state, changeTab}) => {
+const Worlds = ({state, closeDialog}) => {
+  const [auth, setAuth] = useRecoilState(userAuth)
+  const handleGameMapUpdate = e => {
+    setAuth({...auth, world: e.target.innerText})
+    closeDialog()
+  }
+
+  return (
+    <>
+      { state == "world" ? 
+        <><p style={{textAlign: "center"}}>Revisit cleared World Map (SDLC Topic Revisit)</p> 
+        <div className="options-selection-container">
+          { auth?.worlds.map( (name, i) =>
+              <button 
+                key={`map-scene-btn-${i}`}
+                className="glow-border"
+                onClick={state != "custom" ? handleGameMapUpdate : null}>
+                {name}
+              </button>
+                
+            )
+          }
+        </div></> : null
+      }
+    </>
+  )
+}
+
+const CustomGame = ({state, closeDialog}) => {
+  const [auth, setAuth] = useRecoilState(userAuth)
+  const [roomNum, setRoomNum] = useState(auth?.roomNum == "LOBBY" ? Math.random().toString().split('.')[1].slice(0,10) : auth?.roomNum)
+  const [worlds, setWorlds] = useRecoilState(worldState)
+  
+
+  const handleOnChange = async e => {
+    if (e.target.type == "text") {
+      setRoomNum(e.target.value)
+    } else if (e.target.type == "checkbox") {
+      const prevWorlds = {...worlds, [e.target.dataset.map]:{selected: e.target.checked}}
+      const newLen = Object.keys(prevWorlds).filter(s => prevWorlds[s].selected == true).length;
+      if (newLen >= 1) {
+        setWorlds({
+          ...worlds, 
+          [e.target.dataset.map]:{
+            ...worlds[e.target.dataset.map],
+            selected: e.target.checked
+          }
+        })
+      }
+    }
+  }
+  const handleSubmit = e => {
+    e.preventDefault()
+    const selected = Object.keys(worlds).filter(s => worlds[s].selected == true);
+    const topics = selected.map(s => worlds[s].topic);
+    if (selected.length >= 1) {
+      setAuth({
+        ...auth, 
+        roomNum: e.target.localName == 'button' ? 'LOBBY' : roomNum,
+        world: e.target.localName == 'button' ? 'The Skeld': selected[0],
+        worlds: e.target.localName == 'button' ? Object.keys(sceneIdMap) : selected, 
+        topics: e.target.localName == 'button' ? Object.values(worlds).map(w => w.topic) : topics, 
+      })
+    } else console.error("Error: This should not happen. Anyway, the problem is: Need to more than 1 world");
+    // console.log(auth?.worlds)
+    closeDialog()
+  }
+
+  return (
+    <>
+      
+      { state == "custom" ? 
+        <>
+          { auth?.roomNum == "LOBBY" ?
+            <>
+              <p style={{textAlign: "center"}}>Design Challenge Levels to be of 1 or More SDLC Topic(s) </p>
+              {Object.keys(worlds).map(w => 
+                <CheckBox 
+                  key={`select-world-${w}`}
+                  checked={worlds[w].selected} 
+                  setValue={handleOnChange} 
+                  map={w} 
+                  topic={worlds[w].topic}/>
+              )}
+            </> : null
+          }
+          
+          <form id="room-form" onSubmit={handleSubmit}>
+            <div className="sb-task-foot" style={{marginTop: "1rem"}}>
+              {auth?.roomNum !== 'LOBBY' 
+                ? <button onClick={handleSubmit} className="glow-border" style={{width: "25%", paddingBottom: "0.7ex"}}>&#8592; Lobby</button> 
+                : <span style={{flex:1, margin: "auto 0"}}>Challenge Room No.</span>
+              }
+              <input type="text" value={roomNum} readOnly={auth?.roomNum !== "LOBBY"} placeholder="Room number has to be 1-10 digits" onChange={handleOnChange} pattern="^\s*-?\d{1,10}" tabIndex="1" spellCheck="false" className="glow-border" style={{flex:2}}/>
+              {auth?.roomNum == 'LOBBY' 
+                ? <input value="Start Challenge!" type="submit" form="room-form" tabIndex="2" className="glow-border"/>
+                : <button className="glow-border">Invite Friends</button>
+              }
+            </div>
+          </form>
+        </> : null
+      }
+    </>
+  )
+}
+
+const CheckBox = ({map, topic, setValue, checked}) => {
+
+  const labelStyle = {
+    paddingTop: "1rem",
+    paddingBottom: "1rem",
+  }
+
+  return (
+    <label style={labelStyle} className="dashed">
+      <span>{topic}: {map}</span>
+      <input checked={checked} onChange={setValue} data-map={map} data-topic={topic} type="checkbox" style={{float: "right", cursor: "pointer"}}/>
+    </label> 
+  )
+}
+
+const OptionsTabs = ({state, changeTab}) => {
 
   const setSelected = e => {
     changeTab(e.target.dataset.tab);
@@ -91,84 +213,6 @@ const CustomGameTab = ({state, changeTab}) => {
       <TabLine className="glow-border"/>
       <Tab data-tab="custom" onClick={setSelected} style={{opacity: state == "custom" ? 1 : 0.5}} className={state == "custom" ? "dashed" : null}>Challenge Friends</Tab>
     </TabContainer>
-  )
-}
-
-const CheckBox = ({map, topic}) => {
-
-  const labelStyle = {
-    paddingTop: "1rem",
-    paddingBottom: "1rem",
-  }
-
-  return (
-    <label style={labelStyle} className="dashed">
-      <span>{topic}: {map}</span>
-      <input type="checkbox" style={{float: "right", cursor: "pointer"}}/>
-    </label> 
-  )
-}
-
-const GoAnotherRoomField = ({state, closeDialog}) => {
-  const [auth, setAuth] = useRecoilState(userAuth)
-  const [formValues, setFormValues] = useState(Math.random().toString().split('.')[1].slice(0,10))
-  
-  const handleOnChange = e => setFormValues(e.target.value)
-  const handleSubmit = e => {
-    e.preventDefault()
-    setAuth({...auth, roomNum: e.target.localName == 'button' ? 'LOBBY' : formValues})
-    closeDialog()
-  }
-
-  return (
-    state == "custom"? (
-      <form id="room-form" onSubmit={handleSubmit}>
-        <div className="sb-task-foot" style={{marginTop: "1rem"}}>
-          {auth?.roomNum !== 'LOBBY' 
-            ? <button onClick={handleSubmit} className="glow-border" style={{width: "25%", paddingBottom: "0.7ex"}}>&#8592; Lobby</button> 
-            : <span style={{flex:1, margin: "auto 0"}}>Challenge Room No.</span>
-          }
-          <input type="text" value={formValues} placeholder="Room number has to be 1-10 digits" onChange={handleOnChange} pattern="^\s*-?\d{1,10}" tabIndex="1" spellCheck="false" className="glow-border" style={{flex:2}}/>
-          <input value="Start Challenge!" type="submit" form="room-form" tabIndex="2" className="glow-border" style={{cursor: "pointer"}}/>
-        </div>
-      </form>
-    ) : null 
-  )
-}
-
-const MapSelectionsPurpose = ({state, closeDialog}) => {
-  const [auth, setAuth] = useRecoilState(userAuth)
-  const handleGameMapUpdate = e => {
-    setAuth({...auth, world: e.target.innerText})
-    closeDialog()
-  }
-
-  return (
-    <>
-      { state == "world" ? 
-        <><p style={{textAlign: "center"}}>Revisit cleared World Map (SDLC Topic Revisit)</p> 
-        <div className="options-selection-container">
-          { Object.keys(sceneIdMap).map( (name, i) =>
-              <button 
-                key={`map-scene-btn-${i}`}
-                className="glow-border"
-                onClick={state != "custom" ? handleGameMapUpdate : null}>
-                {name}
-              </button>
-                
-            )
-          }
-        </div></> : null
-      }
-      { state == "custom" ? 
-        <><p style={{textAlign: "center"}}>Design Challenge Levels to be in 1 or More SDLC Topic(s) </p>
-        <CheckBox map="The Skeld" topic="Requirements Engineering"/>
-        <CheckBox map="Mira HQ" topic="Architectural Design"/>
-        <CheckBox map="Polus" topic="Implementation"/>
-        <CheckBox map="Airship" topic="Software Testing"/>
-        <CheckBox map="Island" topic="Deployment"/></> : null
-      }
-    </>
   )
 }
 
