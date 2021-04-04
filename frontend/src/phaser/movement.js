@@ -49,7 +49,7 @@ export const movePlayer = (keys, player, map, isProf) => {//added isProf as a pa
   if (keys.includes('ArrowUp') && isProf == true) {
     player.y = player.y - PLAYER_SPEED;
   }
-  else if(keys.includes('ArrowUp') && isWithinMovementBoundaries(absPlayerX, absPlayerY - PLAYER_SPEED)){
+  else if(keys.includes('ArrowUp') && isWithinMovementBoundaries(absPlayerX, absPlayerY - PLAYER_SPEED,map)){
     player.y = player.y - PLAYER_SPEED;
   }
 
@@ -57,7 +57,7 @@ export const movePlayer = (keys, player, map, isProf) => {//added isProf as a pa
   if(isProf == true && keys.includes('ArrowDown')) {
     player.y = player.y + PLAYER_SPEED;
   }
-  else if (keys.includes('ArrowDown') && isWithinMovementBoundaries(absPlayerX, absPlayerY + PLAYER_SPEED)){
+  else if (keys.includes('ArrowDown') && isWithinMovementBoundaries(absPlayerX, absPlayerY + PLAYER_SPEED,map)){
     player.y = player.y + PLAYER_SPEED;
   }
   
@@ -65,7 +65,7 @@ export const movePlayer = (keys, player, map, isProf) => {//added isProf as a pa
     player.x = player.x - PLAYER_SPEED;
     player.list[0].flipX = true;
   }
-  else if (keys.includes('ArrowLeft') && isWithinMovementBoundaries(absPlayerX - PLAYER_SPEED, absPlayerY)){
+  else if (keys.includes('ArrowLeft') && isWithinMovementBoundaries(absPlayerX - PLAYER_SPEED, absPlayerY,map)){
     player.x = player.x - PLAYER_SPEED;
     player.list[0].flipX = true;
   }
@@ -74,7 +74,7 @@ export const movePlayer = (keys, player, map, isProf) => {//added isProf as a pa
     player.x = player.x + PLAYER_SPEED;
     player.list[0].flipX = true;
   }
-  else if (keys.includes('ArrowRight') && isWithinMovementBoundaries(absPlayerX + PLAYER_SPEED, absPlayerY)){
+  else if (keys.includes('ArrowRight') && isWithinMovementBoundaries(absPlayerX + PLAYER_SPEED, absPlayerY,map)){
     player.x = player.x + PLAYER_SPEED;
     player.list[0].flipX = false;
   }
