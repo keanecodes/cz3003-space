@@ -626,6 +626,8 @@ input[type="checkbox"]:checked::after {
   padding: var(--task-header-padding-vertical) var(--task-header-padding-horizontal);
   font-size: large;
   max-width: none;
+  min-height: 7rem;
+  max-height: 7rem;
 }
 
 .game-header {
