@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Stats from './Stats'
+import Stats from '../components/Stats'
 
 
 export default function Leaderboard() {
