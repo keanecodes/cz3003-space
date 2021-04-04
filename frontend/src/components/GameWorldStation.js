@@ -17,12 +17,12 @@ export default function GameWorldStation({ setRender }) {
   const [subtopic, setSubtopic] = useState('')
   const [difficulty, setDifficulty] = useState([])
 
+  const [tries, setTries] = useState(0);
+  const [points, setPoints] = useState(0)
   const [progress, setProgress] = useState([])
   const auth = useRecoilValue(userAuth)
   const handleShowQuestions = () => setOptionsOverlay(!showQuestions)
 
-  let points = [50, 100, 150];
-  let level = ['easy', 'medium', 'hard'];
 
   useEffect( async () => {
       const top = await getTopics();
@@ -63,13 +63,12 @@ export default function GameWorldStation({ setRender }) {
           .then(data => {
               console.log(data.data)
               setDifficulty(data.data);
-              return data.data;
           });
 
     return res;
   }
 
-  // console.log(topics); //kne: please try to remove testing console logs where possible
+
 
   // Extract relevant data
   const cleanUp = (data) => {
@@ -84,11 +83,32 @@ export default function GameWorldStation({ setRender }) {
     return items;
   }
 
-  const handleQuestions = (topic, subtopic, level) => {
+  
+
+  const handleQuestions = (topic, subtopic) => {
     setTopic(topic);
     setSubtopic(subtopic);
     // setDifficulty(level);
     handleShowQuestions();
+  }
+
+  const handlePoints = (level) => {
+    switch(level){
+      case "easy": 
+        // setPoints(50);
+        return 50;
+
+      case "medium": 
+        // setPoints(100);
+        return 100;
+
+      case "hard": 
+        // setPoints(150);
+        return 150;
+
+      default: 
+        return 0;
+    }
   }
 
   const handleNextChapter = () => {
@@ -110,6 +130,12 @@ export default function GameWorldStation({ setRender }) {
     
   }
 
+  const returnDifficulty = (stopic) => {
+    return difficulty.find((e) => {
+      return e.subtopic === stopic
+         })?.difficulty
+  }
+
 
   return (
     // <div>
@@ -126,7 +152,7 @@ export default function GameWorldStation({ setRender }) {
                   <sb-task-details role="button">
                     <h4><sb-var data-var="name">{stopic}</sb-var></h4>
                     <sb-meta>
-                      <sb-var data-var="label">{level[index]}</sb-var>
+                      <sb-var data-var="label">{returnDifficulty(stopic)}</sb-var>
                     </sb-meta>
                   </sb-task-details>
                   <sb-task-stats>
@@ -135,16 +161,16 @@ export default function GameWorldStation({ setRender }) {
                 </div>
               ): 
               (
-                <div key={`${topics[currentIndex]}-${subtopic}-${index}`} data-id="misc-magic" data-sb="true" data-type="sb-task" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" 
-                  onClick={() => handleQuestions(topics[currentIndex], stopic, level[index])} >
+                <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" 
+                  onClick={() => handleQuestions(topics[currentIndex], stopic)} >
                   <sb-task-details role="button">
                     <h4><sb-var data-var="name">{stopic}</sb-var></h4>
                     <sb-meta>
-                      <sb-var data-var="label">{level[index]}</sb-var>
+                    <sb-var data-var="label">{returnDifficulty(stopic)}</sb-var>
                     </sb-meta>
                   </sb-task-details>
                   <sb-task-stats>
-                    <h3><sb-var data-var="points">{points[index]}</sb-var>pt</h3>
+                    <h3><sb-var data-var="points">{handlePoints(returnDifficulty(stopic))}</sb-var>pt</h3>
                   </sb-task-stats>
                 </div>
               )
@@ -159,7 +185,17 @@ export default function GameWorldStation({ setRender }) {
             </sb-task-details>
           </div>
           <div>
-          { showQuestions ? <Questions setRender={setRender} auth={auth} handleShowQuestions={handleShowQuestions} topic={topic} subtopic={subtopic} level={difficulty} progress={progress} setProgress={setProgress}/> : null } 
+          { showQuestions ? <Questions  tries={tries} 
+                                        setTries={setTries} 
+                                        handlePoints={handlePoints} 
+                                        setRender={setRender} 
+                                        auth={auth} 
+                                        handleShowQuestions={handleShowQuestions} 
+                                        topic={topic} 
+                                        subtopic={subtopic} 
+                                        progress={progress} 
+                                        setProgress={setProgress}
+                                        returnDifficulty={returnDifficulty}/> : null } 
           </div>
       </div>
     </div>

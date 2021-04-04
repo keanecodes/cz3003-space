@@ -1,64 +1,136 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Stats from '../components/Stats'
 
 
 export default function Leaderboard() {
 
   const [users, setUsers] = useState([]);
+  const [topics, setTopics] = useState([]);
+  const [subtopics, setSubtopics] = useState([]);
+  const [subtopic, setSubtopic] = useState("");
+
+  const [index, setIndex] = useState(0);
+  const [showStats, setOptionsOverlay]  = useState(false);
+  const [showSummary, setShowSummary]  = useState(false);
+
+  const handleShowStats = () => setOptionsOverlay(!showStats);
 
 
-  useEffect(() => {
-    
-    axios.get("/user/score")
+
+  useEffect( async () => {
+
+    axios.get("/user/get/score")
             .then(data => {
-              setUsers(cleanUp(data));
-              // console.log(cleanUp(data)) //kne: please try to remove testing console logs where possible
-            });        
-  }, []);
+              setUsers(cleanUpScore(data));
+              console.log(cleanUpScore(data))
+            });   
+
+    const top = await getTopics();
+    console.log(top[0]);
+
+    const subs = await getSubtopics(top[index]);
+    console.log(subs)
+  
+}, [index]);
 
 
-  const cleanUp = (data) => {
+
+const getTopics = async () => {
+  const res = await axios.get("/topics")
+          .then(data => {
+              setTopics(cleanUp(data));
+              return cleanUp(data);
+          });
+
+  return res;
+}
+
+const getSubtopics = async (topic) => {
+  const res = await axios.get("/subtopics", { params: topic })
+        .then(data => {
+            setSubtopics(data.data);
+            return data.data;
+        });
+
+  return res;
+}
+
+
+  const cleanUpScore = (data) => {
     let items = []
     const channel = data.data
 
     channel.forEach(element => {
       let item = {
+            id: element.userId.stringValue,
             username: element.displayName.stringValue,
             score: element.score.integerValue
         }
         items.push(item);  
       })
     
-    items.sort((a, b) => a.score > b.score ? -1 : 1);
+    items.sort((a, b) => b.score - a.score);
 
     return items;
   }
 
+  const cleanUp = (data) => {
+    let items = []
+    const channel = data.data
 
+    channel.forEach(element => {
+      let item = element[1];
+        
+        items.push(item);  
+      })
+    return items;
+  }
 
+  const handleTopic = (e) => {
+    e.preventDefault();
+
+    setIndex(index+1);
+    if(index >= 2) {
+      setIndex(0)
+    }
+
+  }
+
+  const handleSubtopic = (sub) => {
+    setShowSummary(false);
+    setSubtopic(sub);
+    handleShowStats();
+    
+  }
+
+  const handleSummary = (sub) => {
+    setShowSummary(true);
+    handleShowStats();
+    
+  }
 
   return (
     // <div>
+    // <div className="game-header">
+
       <div className="content" role="main" id="teams">
         <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
-          <div className="sb-table-head">
-            <h2>Players</h2>
-            <div className="dashed sb-spacer">
+          <div className="toolbar" justify-content="center">
+              <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
+              {
+              subtopics.map((sub) => (
+                <h4 onClick={() => handleSubtopic(sub)} className="glow-border"><sb-var data-var="id">{sub}</sb-var></h4>
+              ))
+              }
+              <h2 onClick={handleSummary} className="glow-border"><sb-var data-var="id">Summary</sb-var></h2>            
 
-              {/* <sb-task-details role="button">
-                  <h2><sb-var data-var="name">Spaceship</sb-var></h2>
-                  <h4>Topic</h4>
-                </sb-task-details> */}
-              {/* <div className="sb-task-dialog-container">
-                <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
-                  <div className="sb-task-header dashed" data-click onClick={handleShowOpt}>
-                    <h3>Topics</h3>
-                    <h3>Subtopics</h3>
-                  </div>
-                  
-                </div>
-              </div> */}
-            </div>
+          </div>
+          <div className="sb-table-head">
+
+            <h2>Players</h2>
+            <div className="dashed sb-spacer"/>
+              
             <h3>Ranking</h3>
           </div>
           <div className="sb-table-head">
@@ -77,8 +149,9 @@ export default function Leaderboard() {
             </div>
             )) : <h1> Loading... </h1>
           }
-          
-          
+        </div>
+        <div> 
+            {showStats? <Stats handleShowStats={handleShowStats} topic={topics[index]} subtopic={subtopic} users={users} showSummary={showSummary}/> : null }
         </div>
       </div>
     // </div>

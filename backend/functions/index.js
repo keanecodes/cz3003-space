@@ -12,7 +12,10 @@ const {
   addUserDetails,
   getAuthenticatedUser,
   updateScore,
-  getScore
+  getScore,
+  updateProgress,
+  getProgress,
+  getTopicScore
 } = require("./handlers/users");
 
 const {
@@ -21,7 +24,9 @@ const {
   getSubtopicsDifficulty,
   getQuestions,
   createSubtopic,
-  createQuestion
+  createQuestion,
+  editQuestion,
+  deleteQuestion,
 } = require("./handlers/questions");
 
 // Users route
@@ -30,8 +35,13 @@ app.post('/login', login);
 app.post('/reset', resetPassword);
 app.post('/user', authMiddleware, addUserDetails);
 app.get('/user', authMiddleware, getAuthenticatedUser);
-app.post('/score', authMiddleware, updateScore);
-app.get('/user/score', authMiddleware, getScore)
+app.post('/user/update/score', authMiddleware, updateScore);
+app.get('/user/get/score', authMiddleware, getScore);
+app.post('/user/update/progress', authMiddleware, updateProgress);
+app.get('/user/get/progress', authMiddleware, getProgress);
+app.get('/user/get/topic/score', authMiddleware, getTopicScore);
+
+
 
 //Questions route
 app.get('/topics', getTopics);
@@ -40,6 +50,11 @@ app.get('/subtopics/level', getSubtopicsDifficulty);
 app.get('/questions', getQuestions);
 app.post('/create/subtopic', createSubtopic);
 app.post('/create/question', createQuestion);
+app.post('/edit/question', editQuestion);
+app.post('/delete/question', deleteQuestion);
+
+app.post('/score', authMiddleware, updateScore);
+app.get('/user/score', authMiddleware, getScore)
 
 
 
@@ -47,4 +62,3 @@ app.post('/create/question', createQuestion);
 // exports.getDonations = functions.https.onRequest((req, res) => { });
 // https://baseurl.com/api/_____
 exports.api = functions.region("asia-southeast2").https.onRequest(app);
-

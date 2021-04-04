@@ -19,11 +19,11 @@ export const miraAnimateMovement = (keys, player) => {
     keys.some((key) => runningKeys.includes(key)) &&
     !player.anims.isPlaying
   ) {
-    player.play('running');
+    player.play(spriteAnim);
   } else if (
     !keys.some((key) => runningKeys.includes(key)) &&
     player.anims.isPlaying
   ) {
-    player.stop('running');
+    player.stop(spriteAnim);
   }
 };

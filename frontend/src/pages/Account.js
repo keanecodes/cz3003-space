@@ -4,6 +4,8 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { contentState } from '../recoil/atoms'
 import { formValuesState, userAuth, authorise, resetPassord } from '../recoil/users'
 import { RiEyeLine, RiEyeCloseLine } from "react-icons/ri"
+import LoadingIcon from '../assets/loader_rings.svg'
+import { sceneIdMap } from "../utils/importer";
 
 export default function Account({view, history}) {
 
@@ -11,29 +13,39 @@ export default function Account({view, history}) {
   const setPageContent = useSetRecoilState(contentState)
   const [passText, setPassText] = useState("password");
   const setUserAuth = useSetRecoilState(userAuth)
+  
   const [error, setErrorUI] = useState(false)
+  const [isError, setIsError] = useState(false)
+  const [errorData, setErrorData] = useState('Invalid Credentials');
+  
+  const [sendingRequest, setSendingRequest] = useState(false);
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setSendingRequest(true);
+
     try {
       if (view == "login" || view == "register") {
         // server call
-        const { data } = await authorise(`/${view}`,formValues) 
-        
-        // show notification
-        // setNotification({
-        //   message: data.message,
-        //   isVisible: true
-        // })
-        // redirect
+        let data;
+        try{
+          data = await authorise(`/${view}`,formValues)
+          data = data.data
+        }
+        catch (e) {
+          setIsError(true);
+          setErrorData(Object.values(e.data.data)[0]);
+          console.error(e.data);
+        }
+
         if (data) {
-          console.log(data)
           setUserAuth({
             isAuthenticated: true,
             user: data,
             //todo: update backend to read gameplay
             roomNum: "LOBBY", 
-            world: "The Skeld"
+            world: "The Skeld",
+            worlds: Object.keys(sceneIdMap) // worlds: ["The Skeld", "Mira HQ", "Airship"]
           })
 
           // redirect to dashboard
@@ -42,24 +54,32 @@ export default function Account({view, history}) {
           setPageContent('game')
         }
       } else {
-        const res = await resetPassord(formValues.email) 
-        alert(res.message)
-        history.push('/login')
-        setPageContent('login')
+        let res;
+        try{
+          res = await resetPassord(formValues.email)
+          alert(res.message)
+          history.push('/login')
+          setPageContent('login')
+        }catch (e) {
+          setIsError(true);
+          console.error(e)
+          setErrorData('Could not find that account. If you do not have an account, register one instead.')
+        }
+
       }
     } catch (error) {
-      // setNotification({
-      //   message: error.message,
-      //   isVisible: true
-      // })
       console.error(error)
-      setErrorUI(true)
+      setIsError(true)
+      setErrorData(Object.values(e.data.data)[0])
     }
+
+    setSendingRequest(false);
+
   };
 
   return (
     <div className="content account-page" id="login">
-      <div className="login-dialog glow-border" role="dialog" data-submit="joinTeam" data-account-error={error}>
+      <div className="login-dialog glow-border" role="dialog" data-submit="joinTeam" data-account-error={isError}>
         {view == "login" 
           ? <h3 className="dashed">Sign In</h3>
           : view == "register" 
@@ -70,6 +90,11 @@ export default function Account({view, history}) {
         {view == "register" ? <Input label="name" type="text" tips={false}/> : null}
         <Input label="email" type="text" tips={false}/>
         {view != "reset" ? <Input label="password" type={passText} setVisibleType={setPassText} tips={false} icon={true}/> : null}
+
+        {sendingRequest ? <img src={LoadingIcon} alt="" style={{height:'50px'}}/>: null}
+
+        {isError ? <p>{errorData}</p>:null}
+        
         
         <input className="glow-border" form="login-form" type="submit" value="Enter"/>
         <form id="login-form" onSubmit={handleSubmit}/>

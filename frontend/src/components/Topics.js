@@ -1,35 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useRecoilValue } from 'recoil'
-import { userAuth } from '../recoil/users'
 
 
+let topics = [];
 
-// let topics = [];
-
-const Form = ({handleShowForm, isTopic, topic, subtopic, setFormReturn, setReload, setCurrentIndex}) => {
+const Form = ({handleShowForm, isTopic, topic, subtopic}) => {
 
   const[formValues, setFormValues] = useState([]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log({...formValues, topic})
     isTopic ?
         axios.post("/create/subtopic",{ ...formValues, topic })
             .then(data => {
-              // console.log(data);
-              setFormReturn(data.data.message);
+              console.log(data);
             })
         :
         axios.post("/create/question",{ ...formValues, topic, subtopic })
             .then(data => {
-              // console.log(data);
-              setFormReturn(data.data.message);
-              setReload(true);
-              setCurrentIndex(0);
+              console.log(data);
             });
 
     setFormValues([]);
-
+    location.reload();
   }
 
   return (
@@ -46,7 +41,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic, setFormReturn, setReloa
               ):(
                   <div>
                     <h2>Create New Question</h2>
-                    <h4>Selected sub-topic: {subtopic}</h4>
+                    <h4>{subtopic}</h4>
                   </div>
               )}
 
@@ -74,7 +69,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic, setFormReturn, setReloa
 
 }
 
-const EditForm = ({handleShowEditForm,  topic, subtopic, setFormReturn, setReload}) => {
+const EditForm = ({handleShowEditForm,  topic, subtopic}) => {
   console.log(topic, subtopic)
   const[formValues, setFormValues] = useState([]);
 
@@ -85,12 +80,11 @@ const EditForm = ({handleShowEditForm,  topic, subtopic, setFormReturn, setReloa
 
     axios.post("/edit/question",{ ...formValues, topic , subtopic})
         .then(data => {
-          setFormReturn(data.data.message);
-          setReload(true);
-          setCurrentIndex(0);
+          console.log(data);
         })
 
     setFormValues([]);
+    // location.reload();
   }
 
   return (
@@ -98,8 +92,7 @@ const EditForm = ({handleShowEditForm,  topic, subtopic, setFormReturn, setReloa
         <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
           <div className="sb-task-header dashed" data-click onClick={handleShowEditForm}>
             <div className="game-header-title">
-              <h2>Edit Question</h2>
-              <h4>Selected sub-topic: {subtopic}</h4>
+              <p>Edit Question</p>
             </div>
           </div>
 
@@ -111,47 +104,6 @@ const EditForm = ({handleShowEditForm,  topic, subtopic, setFormReturn, setReloa
             <Input label="incorrect_answer2" type="incorrect_answer2" formValues={formValues} setFormValues={setFormValues} />
             <Input label="incorrect_answer3" type="incorrect_answer3" formValues={formValues} setFormValues={setFormValues} />
             <Input label="difficulty" type="difficulty" formValues={formValues} setFormValues={setFormValues} />
-          </div>
-
-          <input className="glow-border" form="form" type="submit" value="Submit" />
-          <form id="form" onSubmit={handleSubmit}></form>
-
-        </div>
-      </div>
-  )
-}
-
-const DeleteForm = ({handleShowEditForm,  topic, subtopic,setFormReturn, setReload, setCurrentIndex }) => {
-  const[formValues, setFormValues] = useState([]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    console.log({...formValues, topic, subtopic})
-
-    axios.post("/delete/question",{ ...formValues, topic , subtopic})
-        .then(data => {
-          setFormReturn(data.data.message);
-          setReload(true);
-          setCurrentIndex(0);
-        })
-
-    setFormValues([]);
-
-  }
-
-  return (
-      <div className="login-dialog">
-        <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
-          <div className="sb-task-header dashed" data-click onClick={handleShowEditForm}>
-            <div className="game-header-title">
-              <h2>Delete Question</h2>
-              <h4>Selected sub-topic: {subtopic}</h4>
-            </div>
-          </div>
-
-          <div>
-            <Input label="question" type="question" formValues={formValues} setFormValues={setFormValues} />
           </div>
 
           <input className="glow-border" form="form" type="submit" value="Submit" />
@@ -176,26 +128,16 @@ const Input = ({label, type, formValues, setFormValues}) => {
 }
 
 export default function Topics() {
-  const [topics, setTopics] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const [showForm, setOverlay]  = useState(false)
   const [topicState, setTopicState] = useState('')
-  const [subtopicState, setSubtopicState] = useState('');
+  const [subtopicState, setSubtopicState] = useState('')
   const [isTopic, setIsTopic] = useState(false);
+  const handleShowForm = () => setOverlay(!showForm)
+  const [reload, setReload] = useState(false)
 
-  const [showForm, setOverlay]  = useState(false);
-  const handleShowForm = () => setOverlay(!showForm);
   const [showEditForm, setShowEditForm] = useState(false);
-  const [showDeleteForm, setShowDeleteForm] = useState(false);
-
   const [modifyQuestions, setModifyQuestions] = useState(false);
-  const [reload, setReload] = useState(false);
-
-  const auth = useRecoilValue(userAuth)
-  const isAuthUser = auth?.isAuthenticated
-  const isAuthProf = isAuthUser && auth?.user.bio.isProfessor
-
-  const [formReturn, setFormReturn] = useState('');
 
   useEffect( () => {
     (async () => {
@@ -212,22 +154,14 @@ export default function Topics() {
           subtopicAndQuestions.push({subtopic: subtopic, questions: questions});
         }
 
-        const exists = topics.findIndex(e => e.topic === topic);
+        const exists = topics.find(e => e.topic === topic);
 
-        if (exists === -1) {
-          let newtopics = topics;
-          newtopics.push({topic: topic, subtopics: subtopicAndQuestions});
-          setTopics(newtopics)
+        if (exists === undefined) {
+          topics.push({topic: topic, subtopics: subtopicAndQuestions});
         }
-        else{
-          let newtopics = topics;
-          newtopics[exists] = {topic:topic, subtopics: subtopicAndQuestions};
-          setTopics(newtopics)
-        }
-
+        console.log(topics)
         setCurrentIndex(currentIndex+1);
       }
-      console.log(topics);
     })();
 
 
@@ -260,13 +194,6 @@ export default function Topics() {
     return res;
   };
 
-  const deleteQuestion = async (topic, subtopic, question) => {
-    const res = await axios.get('delete/question', {params: {question:question,topic:topic,subtopic:subtopic
-      }}).then(data=>data.data)
-
-    return res;
-  }
-
   // Extract relevant data
   const cleanUp = (data) => {
     let items = []
@@ -289,9 +216,7 @@ export default function Topics() {
     setTopicState(topic);
     setSubtopicState(subtopic);
     setIsTopic(false);
-    if(isAuthProf==true){handleShowForm();}//check if prof
-
-    if(isAuthProf==true){ setModifyQuestions(true);}//check if prof
+    setModifyQuestions(true);
   }
 
   return (
@@ -314,7 +239,7 @@ export default function Topics() {
                         if (question.question){
                           return (
                               <p>
-                                {question.question}
+                                {question.question.stringValue.toString()}
                                 <br/>
                               </p>
                           )
@@ -322,7 +247,7 @@ export default function Topics() {
 
                         return (
                             <p>
-                              {question.question}
+                              {question.question.stringValue.toString()}
                               <br/>
                             </p>
                         )
@@ -341,52 +266,38 @@ export default function Topics() {
         </sb-categorylist>
 
         <div>
-          {
-            modifyQuestions ?
-                <div>
+        {
+          modifyQuestions ?
 
-                  <div className="sb-task glow-border" onClick={()=>{
-                    handleShowForm();
-                    setShowEditForm(false);
-                    setShowDeleteForm(false);
-                  }}>
-                    <sb-task-details role="button">
-                      <h4><sb-var data-var="name">Create New Question</sb-var></h4>
-                    </sb-task-details>
-                  </div>
+        <div>
+          <div className="sb-task glow-border" onClick={()=>{
+            setShowEditForm(!showEditForm);
+            setOverlay(false);
+          }}>
+            <sb-task-details role="button" >
+              <h4><sb-var data-var="name">Edit question</sb-var></h4>
+            </sb-task-details>
+          </div>
 
-                  <div className="sb-task glow-border" onClick={()=>{
-                    setShowEditForm(!showEditForm);
-                    setOverlay(false);
-                    setShowDeleteForm(false);
-                  }}>
-                    <sb-task-details role="button" >
-                      <h4><sb-var data-var="name">Edit question</sb-var></h4>
-                    </sb-task-details>
-                  </div>
+          <br/>
+          <br/>
+          <br/>
 
-                  <div className="sb-task glow-border" onClick={()=>{
-                    setOverlay(false);
-                    setShowEditForm(false);
-                    setShowDeleteForm(!showDeleteForm);
-                  }}>
-
-                    <sb-task-details role="button">
-                      <h4><sb-var data-var="name">Delete Question</sb-var></h4>
-                    </sb-task-details>
-                  </div>
-
-                  <br/>
-                  <br/>
-                </div> : null}
-          { showForm ? <Form handleShowForm={handleShowForm} setCurrentIndex={setCurrentIndex} setReload={setReload} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setFormReturn={setFormReturn}/> : null }
-          { showEditForm ? <EditForm handleShowEditForm={()=> setShowEditForm(!showEditForm)} setCurrentIndex={setCurrentIndex} setReload={setReload} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setFormReturn={setFormReturn} /> : null }
-          { showDeleteForm ? <DeleteForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} setCurrentIndex={setCurrentIndex} setReload={setReload} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setFormReturn={setFormReturn} /> : null }
-          <br/><br/><br/>
-          {formReturn ? <div className="sb-task glow-border">{formReturn}</div> : null}
+          <div className="sb-task glow-border" onClick={()=>{
+            handleShowForm();
+            setShowEditForm(false);
+          }}>
+            <sb-task-details role="button">
+              <h4><sb-var data-var="name">Create New Question</sb-var></h4>
+            </sb-task-details>
+          </div>
+          <br/>
+          <br/>
+        </div> : null}
+          { showForm ? <Form handleShowForm={handleShowForm} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setReload={setReload} /> : null }
+          { showEditForm ? <EditForm handleShowEditForm={()=>setShowEditForm(!showEditForm)} isTopic={isTopic} topic={topicState} subtopic={subtopicState} setReload={setReload} /> : null }
         </div>
       </div>
   )
 }
-
 

@@ -65,7 +65,9 @@ export const authorise = (method, userData) => {
       return getUserData()
     })
     .catch(err => {
-      console.error(err)
+      let error = new Error(method + 'failed');
+      error.data = {...err.response, message:err.message}
+      throw error;
     });
 }
 
@@ -107,5 +109,8 @@ export const resetPassord = email => {
     .catch((err) => {
       // message.error(err.response.data.message)
       console.error(err.response.data);
+      let error = new Error('Reset failed');
+      error.data = err.response.data
+      throw error;
     });
 }

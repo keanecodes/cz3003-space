@@ -144,7 +144,11 @@ export class MyGame extends Phaser.Scene {
       checkPosX: this.PLAYER_START_X, //-170,
       checkPosY: this.PLAYER_START_Y, //50,
       world: this.world,
-      room: this.roomNumber
+      room: this.roomNumber,
+      worlds: this.roomNumber == "LOBBY" ? Object.keys(sceneIdMap) : this.game.config.user?.worlds,
+      topics: this.roomNumber == "LOBBY" 
+        ? ["Requirements Engineering", "Architectural Design", "Implementation", "Software Testing", "Deployment"] 
+        : this.game.config.user?.topics,
     })
     const playersRef = this.RTdatabase.ref(this.roomAddress);
     playersRef.on('value', snapshot => { this.updatePlayerPositions(snapshot.val()) });

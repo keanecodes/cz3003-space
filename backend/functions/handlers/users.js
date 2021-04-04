@@ -22,6 +22,8 @@ exports.register = (req, res) => {
 
   if (!valid) return res.status(400).json(errors);
 
+  console.log(newUser.email)
+
   let token, userId;
   db.collection('users')
     .where('displayName', '==', req.body.displayName)
@@ -195,15 +197,7 @@ exports.getAuthenticatedUser = (req, res) => {
 };
 
 exports.updateScore = (req, res) => {
-  let {id, score, progress} = req.body.params;
-
-  if (score === 1)
-    score = 50;
-  else if (score === 2)
-    score = 100;
-  else 
-    score = 150;
-
+  let {id, points} = req.body.params;
 
   try {
     db.collection("users")
@@ -211,7 +205,7 @@ exports.updateScore = (req, res) => {
     .get()
     .then(function(querySnapshot) {
       querySnapshot.forEach(function(document) {
-       document.ref.update({score: FieldValue.increment(score) }); 
+       document.ref.update({score: FieldValue.increment(points)}); 
       });
     });
 
@@ -255,4 +249,172 @@ exports.getScore = (req, res) => {
     console.log(error);
     return res.status(500).json({message: error});
   }
+}
+
+exports.updateProgress = (req, res) => {
+
+  let {topic, subtopic, totalTries, points, id} = req.body.params;
+  console.log(topic+subtopic+totalTries+id);
+
+  try {
+
+    db.collection("gameplays")
+      .doc(id)
+      .get()
+      .then((doc) => {
+        if(!doc.exists){
+          db.collection("gameplays")
+            .doc(id)
+            .set({})
+        }
+        doc.ref
+          .collection(topic)
+          .doc(subtopic)
+          .set({
+            tries: totalTries
+          });
+      })
+    
+
+    db.collection("gameplays")
+      .doc(id)
+      .collection(topic)
+      .doc("score")
+      .get()
+      .then((doc) => {
+        console.log(doc.data())
+        
+        if(doc.exists){
+          if(doc.data().totalScore<300){
+            console.log("inc")
+            doc.ref.update({
+                totalScore: FieldValue.increment(points)
+              });
+          }
+          
+        } else {
+          console.log("set")
+          db.collection("gameplays")
+          .doc(id)
+          .collection(topic)
+          .doc("score")
+          .set({
+            totalScore: FieldValue.increment(points)
+          });
+        }
+      })
+
+    return res.status(200).json({message:"Updated gameplay"});
+
+    
+  } catch (error) {
+    
+    console.log(error);
+    return res.status(500).json({message: error});
+  }
+}
+
+exports.getProgress = async (req, res) => {
+
+  let {topic, subtopic} = req.query;
+  // console.log(req);
+
+ 
+  let data=[];
+  let promise = new Promise( async (resolve, reject) => {
+    db.collection("gameplays").get()
+      .then( async (snapshot) => {
+        // console.log(snapshot)
+        await Promise.all(
+          snapshot.docs.map( async (doc) => {
+          console.log(doc.id)
+          await db.collection("gameplays")
+            .doc(doc.id)
+            .collection(topic)
+            .doc(subtopic)
+            .get()
+            .then( async (snapshot) => {
+              data.push({
+                userId: doc.id,
+                tries: snapshot.data().tries
+              })
+              console.log(snapshot.data())
+              
+            }).catch(err => {
+              console.log("Error getting sub-collection documents", err);
+            })
+          })
+        );
+        
+        console.log("resolved")
+        return resolve();
+      
+      }).catch(err => {
+      console.log("Error getting documents", err);
+    }) 
+  })
+
+  promise.then(() => {
+    console.log(data)
+    return res.status(200).json(data);
+  }).catch(err => {
+    console.log("Error returning data", err);
+    return res.status(500).json({message: err});
+
+  })
+    
+ 
+}
+
+
+exports.getTopicScore = async (req, res) => {
+
+  let {topic} = req.query;
+  console.log(req);
+
+ 
+  let data=[];
+  let promise = new Promise( async (resolve, reject) => {
+    db.collection("gameplays").get()
+      .then( async (snapshot) => {
+        // console.log(snapshot)
+        await Promise.all(
+          snapshot.docs.map( async (doc) => {
+          console.log(doc.id)
+          await db.collection("gameplays")
+            .doc(doc.id)
+            .collection(topic)
+            .doc("score")
+            .get()
+            .then( async (snapshot) => {
+              data.push({
+                userId: doc.id,
+                score: snapshot.data().totalScore
+              })
+              console.log(snapshot.data())
+              
+            }).catch(err => {
+              console.log("Error getting sub-collection documents", err);
+            })
+          })
+        );
+        
+        console.log("resolved")
+        return resolve();
+      
+      }).catch(err => {
+      console.log("Error getting documents", err);
+    }) 
+  })
+
+  promise.then(() => {
+    console.log(data)
+    return res.status(200).json(data);
+  }).catch(err => {
+    console.log("Error returning data", err);
+    return res.status(500).json({message: err});
+
+  })
+    
+ 
 }
