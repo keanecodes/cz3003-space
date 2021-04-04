@@ -2,7 +2,7 @@ const fs = require('fs');
 const PNG = require('png-js');
 const IMG_WIDTH = 2160;
 
-PNG.decode('ShipMask().png', function (data) {
+PNG.decode('shipmask.png', function (data) {
   const result = {};
   for (let i = 0; i < data.length; i += 4) {
     const row = Math.floor(i / 4 / IMG_WIDTH);
@@ -15,7 +15,7 @@ PNG.decode('ShipMask().png', function (data) {
     }
   }
   fs.writeFileSync(
-    '../phaser/profBounds.js',
-    'export const profBounds = ' + JSON.stringify(result),
+    '../phaser/mapBounds.js',
+    'export const mapBounds = ' + JSON.stringify(result),
   );
 });
