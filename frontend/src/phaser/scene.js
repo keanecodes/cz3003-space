@@ -1,5 +1,5 @@
-import Phaser from 'phaser';
-import { spriteIdMap, sceneIdMap } from '../utils/importer'
+import Phaser from "phaser";
+import { spriteIdMap, sceneIdMap } from "../utils/importer";
 import {
   PLAYER_SPRITE_HEIGHT,
   PLAYER_SPRITE_WIDTH,
@@ -11,11 +11,14 @@ import { animateMovement } from "./animation";
 
 import firebase from "firebase/app";
 import "firebase/database";
-import "firebase/firestore"
+import "firebase/firestore";
 import { firebaseConfig } from "../recoil/config";
 
 let pressedKeys = [];
 const npc = {};
+let isCollided = false;
+let isCollided1 = false;
+let isCollided2 = false;
 
 export class MyGame extends Phaser.Scene {
   constructor() {
@@ -61,8 +64,19 @@ export class MyGame extends Phaser.Scene {
       this.roomNumber = this.game.config.user.roomNum;
       if (this.game.config.user.world) {
         this.world = this.game.config.user.world;
+        console.log("here1"+sceneIdMap[this.world]);
+
         this.PLAYER_START_X = sceneIdMap[this.world].startX;
+
+        console.log("here2"+sceneIdMap[this.world].startX);
+
         this.PLAYER_START_Y = sceneIdMap[this.world].startY;
+        this.NPC_START_X = sceneIdMap[this.world].npcX;
+        this.NPC_START_Y = sceneIdMap[this.world].npcY;
+        this.NPC_START_X_1 = sceneIdMap[this.world].npcX1;
+        this.NPC_START_Y_1 = sceneIdMap[this.world].npcY1;
+        this.NPC_START_X_2 = sceneIdMap[this.world].npcX2;
+        this.NPC_START_Y_2 = sceneIdMap[this.world].npcY2;
       }
     }
   }
@@ -85,7 +99,9 @@ export class MyGame extends Phaser.Scene {
     this.player.sprite.add(sprite);
     this.player.sprite.add(txtName);
 
-    npc.sprite = this.add.container(this.PLAYER_START_X-500, this.PLAYER_START_Y-50);
+    this.physics.world.enable(sprite);
+
+    npc.sprite = this.add.container(this.NPC_START_X, this.NPC_START_Y);
     var npcsprite1 = this.add.sprite(0, 0, "npc");
     npcsprite1.displayHeight = PLAYER_HEIGHT;
     npcsprite1.displayWidth = PLAYER_WIDTH;
@@ -97,34 +113,79 @@ export class MyGame extends Phaser.Scene {
     npc.sprite.add(npcName1);
 
     this.physics.world.enable(npcsprite1);
-    this.physics.world.enable(sprite);
+
+    npc.sprite = this.add.container(this.NPC_START_X_1, this.NPC_START_Y_1);
+    var npcsprite2 = this.add.sprite(0, 0, "npc");
+    npcsprite2.displayHeight = PLAYER_HEIGHT;
+    npcsprite2.displayWidth = PLAYER_WIDTH;
+    var npcName2 = this.add.text(0, 0, "Question Master 2");
+    npcName2.font = "Arial";
+    npcName2.setOrigin(0.5, 2.3);
+
+    npc.sprite.add(npcsprite2);
+    npc.sprite.add(npcName2);
+
+    this.physics.world.enable(npcsprite2);
+
+    npc.sprite = this.add.container(this.NPC_START_X_2, this.NPC_START_Y_2);
+    var npcsprite3 = this.add.sprite(0, 0, "npc");
+    npcsprite3.displayHeight = PLAYER_HEIGHT;
+    npcsprite3.displayWidth = PLAYER_WIDTH;
+    var npcName3 = this.add.text(0, 0, "Question Master 3");
+    npcName3.font = "Arial";
+    npcName3.setOrigin(0.5, 2.3);
+
+    npc.sprite.add(npcsprite3);
+    npc.sprite.add(npcName3);
+
+    this.physics.world.enable(npcsprite3);
 
     npcsprite1.body.onWorldBounds = true;
-    
-    if(this.isProfessor==false){
-    this.physics.add.collider(sprite, npcsprite1, function (npcsprite1) {
-      console.log("Collided with npc");
-      // insert pop up for qsn here
-    });}//questions only for students
 
-    Object.keys(spriteIdMap).map(id => {
-      this.anims.create({
-        key: `run${id}`,
-        frames: this.anims.generateFrameNumbers(id),
-        frameRate: 24,
-        reapeat: -1,
+    //if(this.isProfessor==false){
+      this.physics.add.collider(sprite, npcsprite1, function setCollision() {
+        console.log("Collided with npc");
+        // insert pop up for qsn here
+        isCollided = true;
+        console.log(isCollided);
       });
-    })
+    //}
+
+    //if(this.isProfessor==false){
+      this.physics.add.collider(sprite, npcsprite2, function setCollision() {
+        console.log("Collided with npc 2");
+        // insert pop up for qsn here
+        isCollided1 = true;
+        console.log(isCollided1);
+      });
+    //}
+
+    //if (this.isProfessor==false){
+      this.physics.add.collider(sprite, npcsprite3, function setCollision() {
+        console.log("Collided with npc 3");
+        // insert pop up for qsn here
+        isCollided2 = true;
+        console.log(isCollided2);
+      });
+    //}
 
     this.input.keyboard.on("keydown", (e) => {
       if (!pressedKeys.includes(e.code)) {
         pressedKeys.push(e.code);
       }
+      isCollided = false;
+      isCollided1 = false;
+      isCollided2 = false;
     });
     this.input.keyboard.on("keyup", (e) => {
       pressedKeys = pressedKeys.filter((key) => key !== e.code);
+      isCollided = false;
+      isCollided1 = false;
+      isCollided2 = false;
+      
     });
 
+   
     this.roomAddress = this.roomNumber == 'LOBBY' ? 'lobby/' + this.world + '/players/' : 'rooms/' + this.world + '/' + this.roomNumber + '/players/';//link for custom game
 
     const thisPlayerRTRef = this.RTdatabase.ref(this.roomAddress + this.playerId);
@@ -150,6 +211,16 @@ export class MyGame extends Phaser.Scene {
         ? ["Requirements Engineering", "Architectural Design", "Implementation", "Software Testing"] 
         : this.game.config.user?.topics,
     })
+
+    Object.keys(spriteIdMap).map(id => {
+      this.anims.create({
+        key: `run${id}`,
+        frames: this.anims.generateFrameNumbers(id),
+        frameRate: 24,
+        reapeat: -1,
+      });
+    })
+
     const playersRef = this.RTdatabase.ref(this.roomAddress);
     playersRef.on('value', snapshot => { this.updatePlayerPositions(snapshot.val()) });
   }
@@ -227,3 +298,14 @@ export class MyGame extends Phaser.Scene {
 
 export default MyGame;
 
+export function getCollision() {
+  return isCollided;
+}
+
+export function getCollision1() {
+  return isCollided1;
+}
+
+export function getCollision2() {
+  return isCollided2;
+}

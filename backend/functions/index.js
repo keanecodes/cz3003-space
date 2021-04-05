@@ -27,6 +27,7 @@ const {
   createQuestion,
   editQuestion,
   deleteQuestion,
+  getHint,
 } = require("./handlers/questions");
 
 // Users route
@@ -52,6 +53,7 @@ app.post('/create/subtopic', createSubtopic);
 app.post('/create/question', createQuestion);
 app.post('/edit/question', editQuestion);
 app.post('/delete/question', deleteQuestion);
+app.get('/hint', getHint);
 
 app.post('/score', authMiddleware, updateScore);
 app.get('/user/score', authMiddleware, getScore)
