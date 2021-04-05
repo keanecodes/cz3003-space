@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Stats from '../components/Stats'
 
+import { useRecoilValue } from 'recoil'
+import { userAuth } from '../recoil/users'
+
 
 export default function Leaderboard() {
 
@@ -17,6 +20,8 @@ export default function Leaderboard() {
   const handleShowStats = () => setOptionsOverlay(!showStats);
 
 
+  const auth = useRecoilValue(userAuth)
+  const isAuthProf = auth?.isAuthenticated && auth?.user.bio.isProfessor
 
   useEffect( async () => {
 
@@ -116,16 +121,18 @@ const getSubtopics = async (topic) => {
 
       <div className="content" role="main" id="teams">
         <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
-          <div className="toolbar" justify-content="center">
-              <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
-              {
-              subtopics.map((sub) => (
-                <h4 onClick={() => handleSubtopic(sub)} className="glow-border"><sb-var data-var="id">{sub}</sb-var></h4>
-              ))
-              }
-              <h2 onClick={handleSummary} className="glow-border"><sb-var data-var="id">Summary</sb-var></h2>            
-
-          </div>
+          {isAuthProf 
+            ? <div className="toolbar" justify-content="center">
+                <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
+                {
+                subtopics.map((sub) => (
+                  <h4 key={`leaderboard-sub-${sub}`}onClick={() => handleSubtopic(sub)} className="glow-border"><sb-var data-var="id">{sub}</sb-var></h4>
+                ))
+                }
+                <h2 onClick={handleSummary} className="glow-border"><sb-var data-var="id">Summary</sb-var></h2>            
+            </div>
+            : null
+          }
           <div className="sb-table-head">
 
             <h2>Players</h2>

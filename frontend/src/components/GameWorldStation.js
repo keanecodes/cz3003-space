@@ -42,7 +42,7 @@ export default function GameWorldStation({ setRender }) {
         worldQns[auth?.world]["topic_path"], 
         Object.keys(worldQns[auth?.world].subtopics));
       setDifficulty(diffi)
-  }, [auth]);
+  }, [auth.world, auth.worlds]);
 
   const handleQuestions = (topic, subtopic) => {
     setTopic(topic);

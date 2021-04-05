@@ -51,13 +51,19 @@ export default function GameHeader({render, setRender}) {
     
   return (
     <GameHeaderContainer>
-      <ShareButton onClick={() => setShowSocial(!showSocial)}>Share</ShareButton>
-      <SocialButton show={showSocial} social="twitter" score={user?.score}/>
-      <SocialButton show={showSocial} social="telegram" score={user?.score}/>
+      {auth?.user.bio.isProfessor 
+        ? null 
+        : <><ShareButton onClick={() => setShowSocial(!showSocial)}>Share</ShareButton>
+            <SocialButton show={showSocial} social="twitter" score={user?.score}/>
+            <SocialButton show={showSocial} social="telegram" score={user?.score}/></>
+      }
       <div className="game-header">
-        <div className="game-header-title">
-          <h2><sb-var data-var="name">Score: {user?.score}</sb-var></h2>
-        </div>
+        {auth?.user.bio.isProfessor 
+          ? null
+          : <div className="game-header-title">
+              <h2><sb-var data-var="name">Score: {user?.score}</sb-var></h2>
+            </div>
+        }
         <div className="game-header-title">
           <h2><sb-var data-var="name">Room: {auth?.roomNum}</sb-var></h2>
           <div className="sb-meta">

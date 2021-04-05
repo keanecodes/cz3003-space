@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useRecoilState, useRecoilValue, useRecoilCallback } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { userAuth, sendUserServerUpdate } from '../recoil/users'
 import { worldsState } from '../recoil/atoms'
 import { spriteIdMap, sceneIdMap } from "../utils/importer";
@@ -9,7 +9,9 @@ import SocialButton from './SocialButton';
 
 
 export default function OptionsOverlay({handleShowOpt}) {
-  const [tab, setTab] = useState("color")
+  const auth = useRecoilValue(userAuth)
+  const isAuthProf = auth?.isAuthenticated && auth?.user.bio.isProfessor
+  const [tab, setTab] = useState( !isAuthProf ? "color" : "world")
 
   return (
     <div className="sb-task-dialog-container">
@@ -18,7 +20,7 @@ export default function OptionsOverlay({handleShowOpt}) {
         
         <OptionsTabs state={tab} changeTab={setTab} closeDialog={handleShowOpt}/>
         
-        <ColourChoices state={tab} closeDialog={handleShowOpt}/>
+        {!isAuthProf ? <ColourChoices state={tab} closeDialog={handleShowOpt}/> : null}
         <Worlds state={tab} closeDialog={handleShowOpt}/>
         <CustomGame state={tab} closeDialog={handleShowOpt}/>
       </div>
@@ -81,6 +83,7 @@ const ColourChoices = ({state, closeDialog}) => {
 
 const Worlds = ({state, closeDialog}) => {
   const [auth, setAuth] = useRecoilState(userAuth)
+  const isAuthProf = auth?.isAuthenticated && auth?.user.bio.isProfessor
   const worlds = useRecoilValue(worldsState)
   const handleGameMapUpdate = e => {
     setAuth({...auth, world: e.target.dataset.world})
@@ -90,7 +93,7 @@ const Worlds = ({state, closeDialog}) => {
   return (
     <>
       { state == "world" ? 
-        <><p style={{textAlign: "center"}}>Revisit cleared World Map (SDLC Topic Revisit)</p> 
+        <><p style={{textAlign: "center"}}>{!isAuthProf ? `Revisit Cleared World Map (SDLC Topic Revisit)` : "View Real-time Students' Topics Engagement"}</p> 
         <div className="options-selection-container">
           { auth?.worlds.map( (name, i) =>
               <button 
@@ -207,6 +210,8 @@ const CheckBox = ({map, topic, setValue, checked}) => {
 }
 
 const OptionsTabs = ({state, changeTab}) => {
+  const auth = useRecoilValue(userAuth)
+  const isAuthProf = auth?.isAuthenticated && auth?.user.bio.isProfessor
 
   const setSelected = e => {
     changeTab(e.target.dataset.tab);
@@ -214,11 +219,14 @@ const OptionsTabs = ({state, changeTab}) => {
   
   return (
     <TabContainer>
-      <Tab data-tab="color" onClick={setSelected} style={{opacity: state == "color" ? 1 : 0.5}} className={state == "color" ? "dashed" : null}>Customise Avatar</Tab>
+      {!isAuthProf 
+        ? <><Tab data-tab="color" onClick={setSelected} style={{opacity: state == "color" ? 1 : 0.5}} className={state == "color" ? "dashed" : null}>Customise Avatar</Tab>
+          <TabLine className="glow-border"/></>
+        :null
+      }
+      <Tab data-tab="world" onClick={setSelected} style={{opacity: state == "world" ? 1 : 0.5}} className={state == "world" ? "dashed" : null}>{!isAuthProf ? "Explore Worlds" : "Change Map"}</Tab>
       <TabLine className="glow-border"/>
-      <Tab data-tab="world" onClick={setSelected} style={{opacity: state == "world" ? 1 : 0.5}} className={state == "world" ? "dashed" : null}>Explore Worlds</Tab>
-      <TabLine className="glow-border"/>
-      <Tab data-tab="custom" onClick={setSelected} style={{opacity: state == "custom" ? 1 : 0.5}} className={state == "custom" ? "dashed" : null}>Challenge Friends</Tab>
+      <Tab data-tab="custom" onClick={setSelected} style={{opacity: state == "custom" ? 1 : 0.5}} className={state == "custom" ? "dashed" : null}>{!isAuthProf ? "Challenge Friends" : "Give Assignment"}</Tab>
     </TabContainer>
   )
 }
