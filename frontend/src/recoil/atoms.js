@@ -20,13 +20,9 @@ export const worldState = atom({
       selected:false,
       topic: "Implementation",
     },
-    "Airship": {
-      selected:false,
-      topic: "Software Testing",
-    },
     "Island": {
       selected:false,
-      topic: "Deployment",
+      topic: "Software Testing",
     },
   }
 })

@@ -147,7 +147,7 @@ export class MyGame extends Phaser.Scene {
       room: this.roomNumber,
       worlds: this.roomNumber == "LOBBY" ? Object.keys(sceneIdMap) : this.game.config.user?.worlds,
       topics: this.roomNumber == "LOBBY" 
-        ? ["Requirements Engineering", "Architectural Design", "Implementation", "Software Testing", "Deployment"] 
+        ? ["Requirements Engineering", "Architectural Design", "Implementation", "Software Testing"] 
         : this.game.config.user?.topics,
     })
     const playersRef = this.RTdatabase.ref(this.roomAddress);

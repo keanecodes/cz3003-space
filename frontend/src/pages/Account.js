@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { contentState } from '../recoil/atoms'
 import { formValuesState, userAuth, authorise, resetPassord } from '../recoil/users'
+import { worldState } from "../recoil/atoms";
 import { RiEyeLine, RiEyeCloseLine } from "react-icons/ri"
 import LoadingIcon from '../assets/loader_rings.svg'
-import { sceneIdMap } from "../utils/importer";
 
 export default function Account({view, history}) {
 
@@ -13,6 +13,7 @@ export default function Account({view, history}) {
   const setPageContent = useSetRecoilState(contentState)
   const [passText, setPassText] = useState("password");
   const setUserAuth = useSetRecoilState(userAuth)
+  const defaultWorlds = useRecoilValue(worldState)
   
   const [error, setErrorUI] = useState(false)
   const [isError, setIsError] = useState(false)
@@ -45,7 +46,7 @@ export default function Account({view, history}) {
             //todo: update backend to read gameplay
             roomNum: "LOBBY", 
             world: "The Skeld",
-            worlds: Object.keys(sceneIdMap) // worlds: ["The Skeld", "Mira HQ", "Airship"]
+            worlds: Object.keys(defaultWorlds) // worlds: ["The Skeld", "Mira HQ", "Airship"]
           })
 
           // redirect to dashboard
