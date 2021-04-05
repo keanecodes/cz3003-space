@@ -3,6 +3,8 @@ import axios from 'axios'
 import { useRecoilValue } from 'recoil'
 import { userAuth } from '../recoil/users'
 import Questions from './Questions';
+import Hints from './Hints';
+import { getCollision,getCollision1,getCollision2 } from "../phaser/scene";
 
 //Test API for Trivia Questions
 const API_URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=easy&type=multiple';
@@ -12,6 +14,8 @@ export default function GameWorldStation({ setRender }) {
   const [showQuestions, setOptionsOverlay]  = useState(false)
   const [topics, setTopics] = useState([])
   const [subtopics, setSubtopics] = useState([])
+  const [showHints, setHintsOverlay]  = useState(false)
+  let showQsn = false;
 
   const [topic, setTopic] = useState('')
   const [subtopic, setSubtopic] = useState('')
@@ -22,6 +26,7 @@ export default function GameWorldStation({ setRender }) {
   const [progress, setProgress] = useState([])
   const auth = useRecoilValue(userAuth)
   const handleShowQuestions = () => setOptionsOverlay(!showQuestions)
+  const handleShowHints = () => setHintsOverlay(!showHints)
 
 
   useEffect( async () => {
@@ -88,8 +93,34 @@ export default function GameWorldStation({ setRender }) {
   const handleQuestions = (topic, subtopic) => {
     setTopic(topic);
     setSubtopic(subtopic);
+
     // setDifficulty(level);
-    handleShowQuestions();
+    if (getCollision()==true && subtopics[0]==subtopic){
+      showQsn=true;
+      console.log("1"+ getCollision());
+      handleShowQuestions();
+    }
+    else if (getCollision1()==true && subtopics[1]==subtopic){
+      showQsn=true;
+      console.log("2" + getCollision1());
+      handleShowQuestions();
+    }
+    else if (getCollision2()==true && subtopics[2]==subtopic){
+      showQsn=true;
+      console.log("3" + getCollision2());
+      handleShowQuestions();
+    }
+    else{
+      showQsn=false;
+      handleHints(topic, subtopic);
+    }
+  }
+
+  const handleHints = (topic, subtopic) => {
+    setTopic(topic);
+    setSubtopic(subtopic);
+    console.log("handling hints");
+    handleShowHints();
   }
 
   const handlePoints = (level) => {
@@ -184,7 +215,7 @@ export default function GameWorldStation({ setRender }) {
               <h4><sb-var data-var="name">Next Chapter</sb-var></h4>
             </sb-task-details>
           </div>
-          <div>
+          <div v-if="showQsn">
           { showQuestions ? <Questions  tries={tries} 
                                         setTries={setTries} 
                                         handlePoints={handlePoints} 
@@ -197,6 +228,14 @@ export default function GameWorldStation({ setRender }) {
                                         setProgress={setProgress}
                                         returnDifficulty={returnDifficulty}/> : null } 
           </div>
+          <div v-else>
+          { showHints ? <Hints  setRender={setRender} 
+                                auth={auth} 
+                                handleShowHints={handleShowHints} 
+                                topic={topic} 
+                                subtopic={subtopic} /> : null } 
+          </div>
+          
       </div>
     </div>
       // </sb-content>

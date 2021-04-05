@@ -68,6 +68,25 @@ exports.getQuestions = (req, res) => {
         });
 }
 
+exports.getHint = (req, res) => {
+    const {topic, subtopic} = req.query;
+    db.collection('questions')
+        .doc(topic)
+        .collection(subtopic)
+        .doc('hint')
+        .get()
+        .then((doc) => {
+            console.log(doc);
+            console.log(doc.value);
+            if (!doc.exists) {
+              return res.status(400).json({ message:'No questions available' });
+            } else {
+                data =  doc._fieldsProto.value.stringValue;
+            }
+            return res.status(200).json(data);
+        });
+}
+
 exports.getSubtopicsDifficulty = async (req, res) => {
     
   const {topic, subtopics} = req.query;
