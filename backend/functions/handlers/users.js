@@ -1,5 +1,5 @@
 const { db } = require('../util/admin');
-const { firebaseConfig } = require('../util/config');
+const firebaseConfig = require('../util/config');
 const firebase = require('firebase');
 const FieldValue = require('firebase-admin').firestore.FieldValue;
 firebase.initializeApp(firebaseConfig);
