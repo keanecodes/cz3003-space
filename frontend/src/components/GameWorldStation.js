@@ -1,19 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState } from 'recoil'
 import { userAuth } from '../recoil/users'
+import { 
+  getSubtopicsDifficulty, 
+  getWorldsInfoQuestions
+} from '../recoil/questions'
 import Questions from './Questions';
 import Hints from './Hints';
-import { getCollision,getCollision1,getCollision2 } from "../phaser/scene";
-
-//Test API for Trivia Questions
-const API_URL = 'https://opentdb.com/api.php?amount=10&category=31&difficulty=easy&type=multiple';
+import { 
+  getCollision,
+  getCollision1,
+  getCollision2 
+} from "../phaser/scene";
+import { NONE } from 'phaser';
 
 export default function GameWorldStation({ setRender }) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // const [currentIndex, setCurrentIndex] = useState(0);
   const [showQuestions, setOptionsOverlay]  = useState(false)
-  const [topics, setTopics] = useState([])
   const [subtopics, setSubtopics] = useState([])
+  const [worldQns, setWorldQns] = useState({})
   const [showHints, setHintsOverlay]  = useState(false)
   let showQsn = false;
 
@@ -24,71 +29,20 @@ export default function GameWorldStation({ setRender }) {
   const [tries, setTries] = useState(0);
   const [points, setPoints] = useState(0)
   const [progress, setProgress] = useState([])
-  const auth = useRecoilValue(userAuth)
+  const [auth, setAuth] = useRecoilState(userAuth)
   const handleShowQuestions = () => setOptionsOverlay(!showQuestions)
   const handleShowHints = () => setHintsOverlay(!showHints)
 
 
   useEffect( async () => {
-      const top = await getTopics();
-      // console.log(top[0]); //kne: please try to remove testing console logs where possible 
-
-      const subs = await getSubtopics(top[currentIndex]);
-      // console.log(subs) //kne: please try to remove testing console logs where possible
-
-      getSubtopicsDifficulty(top[currentIndex], subs);
-    
-  }, [currentIndex]);
-
-
-
-  const getTopics = async () => {
-    const res = await axios.get("/topics")
-            .then(data => {
-                setTopics(cleanUp(data));
-                return cleanUp(data);
-            });
-
-    return res;
-  }
-  
-  const getSubtopics = async (topic) => {
-    const res = await axios.get("/subtopics", { params: topic })
-          .then(data => {
-              setSubtopics(data.data);
-              return data.data;
-          });
-
-    return res;
-  }
-
-  const getSubtopicsDifficulty = async (topic, subtopics) => {
-    // console.log(subtopics) //kne: please try to remove testing console logs where possible
-    const res = await axios.get("/subtopics/level", { params: {topic, subtopics} })
-          .then(data => {
-              console.log(data.data)
-              setDifficulty(data.data);
-          });
-
-    return res;
-  }
-
-
-
-  // Extract relevant data
-  const cleanUp = (data) => {
-    let items = []
-    const channel = data.data
-
-    channel.forEach(element => {
-      let item = element[1];
-        
-        items.push(item);  
-      })
-    return items;
-  }
-
-  
+      const worldQns = await getWorldsInfoQuestions(auth?.world)
+      setWorldQns(worldQns)
+      setSubtopics(Object.keys(worldQns[auth?.world].subtopics))
+      const diffi = await getSubtopicsDifficulty(
+        worldQns[auth?.world]["topic_path"], 
+        Object.keys(worldQns[auth?.world].subtopics));
+      setDifficulty(diffi)
+  }, [auth]);
 
   const handleQuestions = (topic, subtopic) => {
     setTopic(topic);
@@ -142,20 +96,25 @@ export default function GameWorldStation({ setRender }) {
     }
   }
 
-  const handleNextChapter = () => {
-    const newIndex = currentIndex + 1;
+  const handleNextTopic = () => {
+    // const newIndex = currentIndex + 1;
 
     console.log(progress+" "+subtopics.length)
 
-    if(newIndex >= topics.length) {
-      return;
-      setCurrentIndex(newIndex-1);
-        //setGameEnded(true);
-    }
+    // if(newIndex >= topicsPaths.length) {
+    //   return;
+    //   setCurrentIndex(newIndex-1);
+    //     //setGameEnded(true);
+    // }
 
     if(progress.length >= subtopics.length) {
       setProgress([]);
-      setCurrentIndex(newIndex);
+      // setCurrentIndex(newIndex);
+      if (auth?.worlds.findIndex(w => w = auth?.world)+1 < auth?.worlds.length)
+        setAuth({
+          ...auth, 
+          world: auth?.worlds[auth?.worlds.findIndex(w => w = auth?.world)+1]
+        })
     }
 
     
@@ -173,13 +132,13 @@ export default function GameWorldStation({ setRender }) {
     // <sb-content role="main" id="challenges">
     <div className="sb-categoryList">
       <div className="sb-category sb-table" data-id="The Deck" data-sb="true" data-type="sb-category" data-unsorted="true">
-          <h2><sb-var data-var="id">{topics[currentIndex]}</sb-var></h2>
+          <h2><sb-var data-var="id">{worldQns[auth?.world]?.topic}</sb-var></h2>
           {
            subtopics.length > 0 ?  
             subtopics.map((stopic, index) => (
               progress.find((e) => e === stopic ) ? 
               (
-                <div key={`${topics[currentIndex]}-${subtopic}-${index}`} data-id="misc-magic" data-sb="true" data-type="sb-task" data-solved="true" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border">
+                <div key={`${worldQns[auth?.world]?.topic}-${subtopic}-${index}`} data-id="misc-magic" data-sb="true" data-type="sb-task" data-solved="true" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" style={{cursor: "default"}}>
                   <sb-task-details role="button">
                     <h4><sb-var data-var="name">{stopic}</sb-var></h4>
                     <sb-meta>
@@ -192,8 +151,8 @@ export default function GameWorldStation({ setRender }) {
                 </div>
               ): 
               (
-                <div data-id="misc-magic" data-sb="true" data-type="sb-task" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" 
-                  onClick={() => handleQuestions(topics[currentIndex], stopic)} >
+                <div key={`${worldQns[auth?.world]?.topic}-${subtopic}-${index}`} data-id="misc-magic" data-sb="true" data-type="sb-task" data-name="Requirement Analysis" data-description="file -P name=1000 -m flag.mgc the_flag.txt" data-label="easy" data-click="setTaskActive/true" data-submit="submitFlag" className="sb-task glow-border" 
+                  onClick={() => handleQuestions(worldQns[auth?.world]["topic_path"], stopic)} >
                   <sb-task-details role="button">
                     <h4><sb-var data-var="name">{stopic}</sb-var></h4>
                     <sb-meta>
@@ -209,10 +168,10 @@ export default function GameWorldStation({ setRender }) {
           ) : <h1>Loading...</h1>
           }
          
-          <div disabled style={{textAlign: "center", boxShadow: "0 0 var(--glow-border-blur) var(--glow-border-width) grey, inset 0 0 var(--glow-border-blur) var(--glow-border-width) grey", border: "var(--glow-border-width) solid grey", color: (progress.length >= subtopics.length)? "green":"grey", backgroundColor: (progress.length >= subtopics.length)? "green":"grey", opacity: (progress.length >= subtopics.length)? 1:0.5}} data-id="misc-magic" data-sb="true" data-type="sb-task" className="sb-task glow-border" data-unsorted="true" data-active="false"
-          onClick={handleNextChapter}>
+          <div disabled style={{textAlign: "center", boxShadow: "0 0 var(--glow-border-blur) var(--glow-border-width) grey, inset 0 0 var(--glow-border-blur) var(--glow-border-width) grey", border: "var(--glow-border-width) solid grey", color: (progress.length >= subtopics.length)? "green":"grey", backgroundColor: (progress.length >= subtopics.length)? "green":"grey", opacity: (progress.length >= subtopics.length)? 1:0.5, cursor: (progress.length >= subtopics.length)? "pointer":"default"}}  data-id="misc-magic" data-sb="true" data-type="sb-task" className="sb-task glow-border" data-unsorted="true" data-active="false"
+          onClick={handleNextTopic}>
             <sb-task-details role="button" style={{alignItems: "center"}}>
-              <h4><sb-var data-var="name">Next Chapter</sb-var></h4>
+              <h4><sb-var data-var="name">Next World Topic</sb-var></h4>
             </sb-task-details>
           </div>
           <div v-if="showQsn">
@@ -222,7 +181,7 @@ export default function GameWorldStation({ setRender }) {
                                         setRender={setRender} 
                                         auth={auth} 
                                         handleShowQuestions={handleShowQuestions} 
-                                        topic={topic} 
+                                        topic={worldQns[auth?.world]["topic_path"]} 
                                         subtopic={subtopic} 
                                         progress={progress} 
                                         setProgress={setProgress}
@@ -232,7 +191,7 @@ export default function GameWorldStation({ setRender }) {
           { showHints ? <Hints  setRender={setRender} 
                                 auth={auth} 
                                 handleShowHints={handleShowHints} 
-                                topic={topic} 
+                                topic={worldQns[auth?.world]["topic_path"]} 
                                 subtopic={subtopic} /> : null } 
           </div>
           

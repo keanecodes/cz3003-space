@@ -1,12 +1,12 @@
 import { atom } from 'recoil'
 
-export const contentState = atom({
-  key: 'contentState',
+export const pageTabState = atom({
+  key: 'pageTabState',
   default: 'home'
 })
 
-export const worldState = atom({
-  key: 'worldState',
+export const worldsState = atom({
+  key: 'worldsState',
   default: {
     "The Skeld": {
       selected:true,
@@ -18,7 +18,7 @@ export const worldState = atom({
     },
     "Polus": {
       selected:false,
-      topic: "Implementation",
+      topic: "Subsystem Implementation",
     },
     "Island": {
       selected:false,

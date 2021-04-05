@@ -5,23 +5,21 @@ import Account from "./pages/Account";
 import Leaderboard from "./pages/Leaderboard";
 import Topics from "./pages/Topics";
 import GameWrapper from "./pages/GameWrapper";
-import { useRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { API_BASE_URL } from './recoil/config'
-import { contentState } from "./recoil/atoms"
+import { pageTabState } from "./recoil/atoms"
 import { Switch, Route } from "react-router-dom";
 import axios from 'axios'
 
 axios.defaults.baseURL = API_BASE_URL
 
 export default function Container({history}) {
-	const menuClick = e => setContent(e.target.dataset.tolink)
-	
-	const [dataContent, setContent] = useRecoilState(contentState)
+	const dataContent = useRecoilValue(pageTabState)
 
 	return (
 		<div className="border">
 			<div className="container" data-content={dataContent}>
-				<Toolbar menuClick={menuClick} history={history}/>
+				<Toolbar history={history}/>
 				<>
 					<Switch>
 						<Route path='/login' component={() => <Account view="login" history={history}/>}/>

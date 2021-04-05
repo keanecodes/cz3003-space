@@ -1,21 +1,19 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { contentState } from '../recoil/atoms'
+import { pageTabState, worldsState } from '../recoil/atoms'
 import { formValuesState, userAuth, authorise, resetPassord } from '../recoil/users'
-import { worldState } from "../recoil/atoms";
 import { RiEyeLine, RiEyeCloseLine } from "react-icons/ri"
 import LoadingIcon from '../assets/loader_rings.svg'
 
 export default function Account({view, history}) {
 
   const formValues = useRecoilValue(formValuesState)
-  const setPageContent = useSetRecoilState(contentState)
+  const setPageContent = useSetRecoilState(pageTabState)
   const [passText, setPassText] = useState("password");
   const setUserAuth = useSetRecoilState(userAuth)
-  const defaultWorlds = useRecoilValue(worldState)
+  const defaultWorlds = useRecoilValue(worldsState)
   
-  const [error, setErrorUI] = useState(false)
   const [isError, setIsError] = useState(false)
   const [errorData, setErrorData] = useState('Invalid Credentials');
   

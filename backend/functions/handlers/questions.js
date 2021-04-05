@@ -1,5 +1,30 @@
 const { db } = require('../util/admin');
 
+
+
+exports.getTopicsInfo= (req, res) => {
+    const data = {};
+    db.collection('questions')
+        .get()
+        .then((snapshot) => {
+            snapshot.forEach((doc) => {
+                if (!doc.exists) {
+                    return res.status(400).json({ message:'No topics available' });
+                } else {
+                    const d = doc.data()
+                    data[d.world] = {
+                            ["topic_path"]: doc._ref._path.segments[1],
+                            topic: d.topic
+                        }
+                    
+                }
+            });
+            console.log(data)
+            return res.status(200).json(data);
+        });
+
+}
+
 exports.getTopics = (req, res) => {
     const data = [];
     db.collection('questions')

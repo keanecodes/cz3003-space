@@ -36,8 +36,7 @@ const Hints = ({ handleShowHints, topic, subtopic }) => {
           onClick={handleShowHints}
         >
           <div className="game-header-title">
-            <h2>{subtopic}</h2>
-            <div className="sb-meta">The Skeld - Room: 12091923094</div>
+            <h2>Can you find the Question Master?</h2>
           </div>
         </div>
         <div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRecoilValue } from 'recoil'
 import { userAuth } from '../recoil/users'
+import { worldsState } from '../recoil/atoms'
 import OptionsOverlay from './OptionsOverlay'
 import styled from 'styled-components'
 import SocialButton from './SocialButton'
@@ -13,6 +14,7 @@ export default function GameHeader({render, setRender}) {
   const handleShowOpt = () => setOptionsOverlay(!showOptions)
   const [user, setUser] = useState([]);
   const auth = useRecoilValue(userAuth)
+  const worlds = useRecoilValue(worldsState)
   
 
 
@@ -59,7 +61,7 @@ export default function GameHeader({render, setRender}) {
         <div className="game-header-title">
           <h2><sb-var data-var="name">Room: {auth?.roomNum}</sb-var></h2>
           <div className="sb-meta">
-            <sb-var data-var="label">{auth?.world} - Requirements Engineering</sb-var>
+            <sb-var data-var="label">{auth?.world} - {worlds[auth?.world].topic}</sb-var>
           </div>
         </div>
         <button onClick={handleShowOpt}>Options</button>

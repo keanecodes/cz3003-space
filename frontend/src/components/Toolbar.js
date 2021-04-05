@@ -1,13 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useRecoilState, useSetRecoilState } from 'recoil'
-import { contentState } from "../recoil/atoms"
 import { userAuth, logoutUser } from '../recoil/users'
+import { pageTabState } from "../recoil/atoms"
 
-export default function Toolbar({menuClick, history}) {
-
+export default function Toolbar({history}) {
   const [auth, setAuth] = useRecoilState(userAuth)
-  const setPageContent = useSetRecoilState(contentState)
+  const setContent = useSetRecoilState(pageTabState)
+  const menuClick = e => setContent(e.target.dataset.tolink)
   // const setNotification = useSetRecoilState(commonNotification)
 
   // onLogout
@@ -28,7 +28,6 @@ export default function Toolbar({menuClick, history}) {
     location.reload()
   }
   const isAuthUser = auth?.isAuthenticated
-  const isAuthProf = isAuthUser && auth?.user?.bio?.isProfessor
 
   return (
     <div className="toolbar">

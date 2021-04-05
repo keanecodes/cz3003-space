@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useRecoilState, useRecoilValue, useRecoilCallback } from 'recoil'
 import { userAuth, sendUserServerUpdate } from '../recoil/users'
-import { worldState } from '../recoil/atoms'
+import { worldsState } from '../recoil/atoms'
 import { spriteIdMap, sceneIdMap } from "../utils/importer";
 import styled from 'styled-components'
 import SocialButton from './SocialButton';
@@ -81,8 +81,9 @@ const ColourChoices = ({state, closeDialog}) => {
 
 const Worlds = ({state, closeDialog}) => {
   const [auth, setAuth] = useRecoilState(userAuth)
+  const worlds = useRecoilValue(worldsState)
   const handleGameMapUpdate = e => {
-    setAuth({...auth, world: e.target.innerText})
+    setAuth({...auth, world: e.target.dataset.world})
     closeDialog()
   }
 
@@ -95,8 +96,10 @@ const Worlds = ({state, closeDialog}) => {
               <button 
                 key={`map-scene-btn-${i}`}
                 className="glow-border"
+                style={{flex:1}}
+                data-world={name}
                 onClick={state != "custom" ? handleGameMapUpdate : null}>
-                {name}
+                {`${name}`} <br/><br/> {`${worlds[name].topic}`}
               </button>
                 
             )
@@ -110,7 +113,7 @@ const Worlds = ({state, closeDialog}) => {
 const CustomGame = ({state, closeDialog}) => {
   const [auth, setAuth] = useRecoilState(userAuth)
   const [roomNum, setRoomNum] = useState(auth?.roomNum == "LOBBY" ? Math.random().toString().split('.')[1].slice(0,8) : auth?.roomNum)
-  const [worlds, setWorlds] = useRecoilState(worldState)
+  const [worlds, setWorlds] = useRecoilState(worldsState)
   
 
   const handleOnChange = async e => {

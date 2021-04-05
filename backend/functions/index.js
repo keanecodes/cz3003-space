@@ -19,6 +19,7 @@ const {
 } = require("./handlers/users");
 
 const {
+  getTopicsInfo,
   getTopics,
   getSubtopics,
   getSubtopicsDifficulty,
@@ -45,6 +46,7 @@ app.get('/user/get/topic/score', authMiddleware, getTopicScore);
 
 
 //Questions route
+app.get('/topics/info', getTopicsInfo);
 app.get('/topics', getTopics);
 app.get('/subtopics', getSubtopics);
 app.get('/subtopics/level', getSubtopicsDifficulty);
