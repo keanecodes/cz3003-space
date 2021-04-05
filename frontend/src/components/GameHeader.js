@@ -4,9 +4,8 @@ import { useRecoilValue } from 'recoil'
 import { userAuth } from '../recoil/users'
 import OptionsOverlay from './OptionsOverlay'
 import styled from 'styled-components'
-import { RiShareLine } from 'react-icons/ri'
-import twitterlogopath from '../assets/twitter.png'
-import facebooklogopath from '../assets/facebook.png'
+import SocialButton from './SocialButton'
+
 
 export default function GameHeader({render, setRender}) {
   const [showOptions, setOptionsOverlay]  = useState(false)
@@ -14,6 +13,7 @@ export default function GameHeader({render, setRender}) {
   const handleShowOpt = () => setOptionsOverlay(!showOptions)
   const [user, setUser] = useState([]);
   const auth = useRecoilValue(userAuth)
+  
 
 
   useEffect(() => {
@@ -50,16 +50,8 @@ export default function GameHeader({render, setRender}) {
   return (
     <GameHeaderContainer>
       <ShareButton onClick={() => setShowSocial(!showSocial)}>Share</ShareButton>
-      <SocialButton show={showSocial} type="twitter">
-        {/* <a href="https://twitter.com/intent/tweet/?text=Super%20fast%20and%20easy%20Social%20Media%20Sharing%20Buttons.%20No%20JavaScript.%20No%20tracking.&amp" target="_blank"> */}
-          <img src={twitterlogopath} alt="" width="100" height="100"/>
-        {/* </a> */}
-      </SocialButton>
-      <SocialButton show={showSocial} type="facebook">
-        {/* <a href="https://facebook.com/sharer/sharer.php?" target="_blank"> */}
-          <img src={facebooklogopath} alt="" width="100" height="100"/>
-        {/* </a> */}
-      </SocialButton>
+      <SocialButton show={showSocial} social="twitter" score={user?.score}/>
+      <SocialButton show={showSocial} social="telegram" score={user?.score}/>
       <div className="game-header">
         <div className="game-header-title">
           <h2><sb-var data-var="name">Score: {user?.score}</sb-var></h2>
@@ -96,21 +88,6 @@ const ShareButton = styled.button`
   margin: 0.5rem 0;
   cursor: pointer;
   outline: none;
-`
-
-const SocialButton = styled.button`
-  display: ${props => props.show ? "block" : "none"};
-  // background-image: url('${props => props.path}');
-  // background-repeat:no-repeat;
-  background-color: transparent;
-  position:absolute;
-  left: ${props => props.type == "twitter" ? '-7rem' : '-12rem'};
-  top: -0.8rem;
-  border: none;
-  outline: none;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
 `
 
 

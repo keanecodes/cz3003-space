@@ -4,6 +4,7 @@ import { userAuth, sendUserServerUpdate } from '../recoil/users'
 import { worldState } from '../recoil/atoms'
 import { spriteIdMap, sceneIdMap } from "../utils/importer";
 import styled from 'styled-components'
+import SocialButton from './SocialButton';
 
 
 
@@ -108,7 +109,7 @@ const Worlds = ({state, closeDialog}) => {
 
 const CustomGame = ({state, closeDialog}) => {
   const [auth, setAuth] = useRecoilState(userAuth)
-  const [roomNum, setRoomNum] = useState(auth?.roomNum == "LOBBY" ? Math.random().toString().split('.')[1].slice(0,10) : auth?.roomNum)
+  const [roomNum, setRoomNum] = useState(auth?.roomNum == "LOBBY" ? Math.random().toString().split('.')[1].slice(0,8) : auth?.roomNum)
   const [worlds, setWorlds] = useRecoilState(worldState)
   
 
@@ -171,10 +172,13 @@ const CustomGame = ({state, closeDialog}) => {
                 ? <button onClick={handleSubmit} className="glow-border" style={{width: "25%", paddingBottom: "0.7ex"}}>&#8592; Lobby</button> 
                 : <span style={{flex:1, margin: "auto 0"}}>Challenge Room No.</span>
               }
-              <input type="text" value={roomNum} readOnly={auth?.roomNum !== "LOBBY"} placeholder="Room number has to be 1-10 digits" onChange={handleOnChange} pattern="^\s*-?\d{1,10}" tabIndex="1" spellCheck="false" className="glow-border" style={{flex:2}}/>
+              <input type="text" value={roomNum} readOnly={auth?.roomNum !== "LOBBY"} placeholder="Room number has to be 1-8 digits" onChange={handleOnChange} pattern="^\s*-?\d{1,8}" tabIndex="1" spellCheck="false" className="glow-border" style={{flex:2}}/>
               {auth?.roomNum == 'LOBBY' 
                 ? <input value="Start Challenge!" type="submit" form="room-form" tabIndex="2" className="glow-border"/>
-                : <button className="glow-border">Invite Friends</button>
+                : <div style={{position: 'relative', marginTop: "-2rem"}}>&nbsp;&nbsp; Invite Friends 
+                  <SocialButton show={true} social="twitter" style={{left:"revert", right: "0rem", top: "0.1rem"}} room={roomNum !== "LOBBY" ? roomNum : null}/>
+                  <SocialButton show={true} social="telegram" style={{left:"revert", right: "5.2rem", top: "0.4rem"}} room={roomNum !== "LOBBY" ? roomNum : null}/>
+                </div>
               }
             </div>
           </form>

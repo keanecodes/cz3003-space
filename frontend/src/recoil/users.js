@@ -79,6 +79,9 @@ export const logoutUser = () => {
 }
 
 export const getUserData = () => {
+  if (localStorage.SPACEAuthToken)
+    axios.defaults.headers.common['Authorization'] = localStorage.SPACEAuthToken;
+    console.log("happens")
   return axios.get('/user');
 }
 
