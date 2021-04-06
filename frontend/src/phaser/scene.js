@@ -142,32 +142,32 @@ export class MyGame extends Phaser.Scene {
 
     npcsprite1.body.onWorldBounds = true;
 
-    //if(this.isProfessor==false){
+    if(this.isProfessor==false){
       this.physics.add.collider(sprite, npcsprite1, function setCollision() {
         console.log("Collided with npc");
         // insert pop up for qsn here
         isCollided = true;
         console.log(isCollided);
       });
-    //}
+    }
 
-    //if(this.isProfessor==false){
+    if(this.isProfessor==false){
       this.physics.add.collider(sprite, npcsprite2, function setCollision() {
         console.log("Collided with npc 2");
         // insert pop up for qsn here
         isCollided1 = true;
         console.log(isCollided1);
       });
-    //}
+    }
 
-    //if (this.isProfessor==false){
+    if (this.isProfessor==false){
       this.physics.add.collider(sprite, npcsprite3, function setCollision() {
         console.log("Collided with npc 3");
         // insert pop up for qsn here
         isCollided2 = true;
         console.log(isCollided2);
       });
-    //}
+    }
 
     this.input.keyboard.on("keydown", (e) => {
       if (!pressedKeys.includes(e.code)) {

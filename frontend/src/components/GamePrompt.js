@@ -19,7 +19,7 @@ export default function GamePrompt() {
         <h3 className="sb-dashed">Get started!</h3>
         {isAuthProf 
          ? <p role="article">&#8592; Select a chapter on the left or start pressing the arrow keys on your keyboard to view another part of the map to see your student engagement in realtime.</p>
-         : <p role="article">&#8592; Find the Use Case chapter's first task on the left to get hints on your first station for this map's topic on Requirements Engineering.</p>
+         : <p role="article">&#8592; Press the blue buttons at the left side to find hints on the subtopics that need to be solved for this map's topic.</p>
         }
       </sb-update>
     </div>
