@@ -46,7 +46,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic, setFormReturn, setReloa
               ):(
                   <div>
                     <h2>Create New Question</h2>
-                    <h4>Selected sub-topic: {subtopic}</h4>
+
                   </div>
               )}
 
@@ -57,6 +57,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic, setFormReturn, setReloa
               <Input label="subtopic" type="subtopic" formValues={formValues} setFormValues={setFormValues} />
           )}
           <div>
+            <h3>Selected sub-topic: {subtopic}</h3>
             <Input label="question" type="question" formValues={formValues} setFormValues={setFormValues} />
             <Input label="correct_answer" type="correct_answer" formValues={formValues} setFormValues={setFormValues} />
             <Input label="incorrect_answer1" type="incorrect_answer1" formValues={formValues} setFormValues={setFormValues} />
@@ -64,6 +65,7 @@ const Form = ({handleShowForm, isTopic, topic, subtopic, setFormReturn, setReloa
             <Input label="incorrect_answer3" type="incorrect_answer3" formValues={formValues} setFormValues={setFormValues} />
             <Input label="difficulty" type="difficulty" formValues={formValues} setFormValues={setFormValues} />
           </div>
+          <br/>
 
           <input className="glow-border" form="form" type="submit" value="Submit" />
           <form id="form" onSubmit={handleSubmit}></form>
@@ -99,11 +101,11 @@ const EditForm = ({handleShowEditForm,  topic, subtopic, setFormReturn, setReloa
           <div className="sb-task-header dashed" data-click onClick={handleShowEditForm}>
             <div className="game-header-title">
               <h2>Edit Question</h2>
-              <h4>Selected sub-topic: {subtopic}</h4>
             </div>
           </div>
 
           <div>
+            <h3>Selected sub-topic: {subtopic}</h3>
             <Input label="question" type="question" formValues={formValues} setFormValues={setFormValues} />
             <Input label="newQuestion" type="newQuestion" formValues={formValues} setFormValues={setFormValues} />
             <Input label="correct_answer" type="correct_answer" formValues={formValues} setFormValues={setFormValues} />
@@ -112,7 +114,7 @@ const EditForm = ({handleShowEditForm,  topic, subtopic, setFormReturn, setReloa
             <Input label="incorrect_answer3" type="incorrect_answer3" formValues={formValues} setFormValues={setFormValues} />
             <Input label="difficulty" type="difficulty" formValues={formValues} setFormValues={setFormValues} />
           </div>
-
+          <br/>
           <input className="glow-border" form="form" type="submit" value="Submit" />
           <form id="form" onSubmit={handleSubmit}></form>
 
@@ -146,11 +148,11 @@ const DeleteForm = ({handleShowEditForm,  topic, subtopic,setFormReturn, setRelo
           <div className="sb-task-header dashed" data-click onClick={handleShowEditForm}>
             <div className="game-header-title">
               <h2>Delete Question</h2>
-              <h4>Selected sub-topic: {subtopic}</h4>
             </div>
           </div>
 
           <div>
+            <h3>Selected sub-topic: {subtopic}</h3>
             <Input label="question" type="question" formValues={formValues} setFormValues={setFormValues} />
           </div>
 
@@ -330,9 +332,6 @@ export default function Topics() {
 
                       <sb-task-stats>
                         <h3><sb-var data-var="points">50</sb-var>pt</h3>
-                        <sb-meta>
-                          <sb-var data-var="solves">9</sb-var> solves
-                        </sb-meta>
                       </sb-task-stats>
                     </div>
                 ))}
