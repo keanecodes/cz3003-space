@@ -3,7 +3,7 @@ import Questionare from './Questionare';
 import axios from 'axios'
 
 
-const Stats = ({handleShowStats, topic, subtopic, users, showSummary}) => {
+const Stats = ({topic, subtopic, users, showSummary}) => {
 
     const [progress, setProgress] = useState([]);
     const [score, setScore] = useState([]);
@@ -23,7 +23,7 @@ const Stats = ({handleShowStats, topic, subtopic, users, showSummary}) => {
             // setProgress(cleanUp(data))
         }); 
       
-    }, []);
+    }, [topic, subtopic, showSummary]);
 
 
     const cleanUpTries = (data) => {
@@ -61,21 +61,20 @@ const Stats = ({handleShowStats, topic, subtopic, users, showSummary}) => {
   
       
     return (
-      <div className="sb-task-dialog-container">
-        <div className="sb-task-dialog glow-border" aria-modal="true" role="dialog">
-          <div className="sb-task-header dashed" data-click onClick={handleShowStats}>
+      <div className="content">
+        <div className="sb-table-head" aria-modal="true" role="dialog" style={{justifyContent:"center", flex: 1, flexDirection:"row"}}>
+          <div className="sb-task-header dashed" data-click>
             <div className="game-header-title">
               <h2>{topic}</h2>
               {
                   (showSummary) ? 
-                  <h1>overview</h1> :
-                  <h1>{subtopic} stats</h1> 
+                  <span><h1>overview</h1></span> :
+                  <span><h1>{subtopic} stats</h1></span> 
 
               }
 
             </div>
           </div>
-          <div>
             
             <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
             {   (showSummary) ? 
@@ -106,7 +105,6 @@ const Stats = ({handleShowStats, topic, subtopic, users, showSummary}) => {
           </div>
         
         </div>
-      </div>
     )
   
   }
