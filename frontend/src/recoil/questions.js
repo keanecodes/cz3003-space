@@ -37,6 +37,7 @@ export const getSubtopics = async (topic) => {
 export const getSubtopicsDifficulty = async (topic, subtopics) => {
   try {
     const { data } = await axios.get("/subtopics/level", { params: { topic, subtopics } })
+    console.log("hihi "+data)
     return data
   } catch (err) {
     console.error(`Error: Can't get subtopics difficult for the subtopic ${subtopic}.`, err.response.data)

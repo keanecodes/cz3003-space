@@ -51,17 +51,17 @@ export default function GameWorldStation({ setRender }) {
     // setDifficulty(level);
     if (getCollision()==true && subtopics[0]==subtopic){
       showQsn=true;
-      console.log("1"+ getCollision());
+      // console.log("1"+ getCollision());
       handleShowQuestions();
     }
     else if (getCollision1()==true && subtopics[1]==subtopic){
       showQsn=true;
-      console.log("2" + getCollision1());
+      // console.log("2" + getCollision1());
       handleShowQuestions();
     }
     else if (getCollision2()==true && subtopics[2]==subtopic){
       showQsn=true;
-      console.log("3" + getCollision2());
+      //console.log("3" + getCollision2());
       handleShowQuestions();
     }
     else{
@@ -73,7 +73,7 @@ export default function GameWorldStation({ setRender }) {
   const handleHints = (topic, subtopic) => {
     setTopic(topic);
     setSubtopic(subtopic);
-    console.log("handling hints");
+    // console.log("handling hints");
     handleShowHints();
   }
 
