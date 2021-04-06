@@ -138,27 +138,27 @@ const getSubtopics = async (topic) => {
           {
             isAuthProf? (
               <div className="toolbar" justify-content="center">
-            <select onChange={(e) => handleTopic(e.target.value)} className="glow-border">
-                <option selected="selected" >Overview</option>
-              {
-                topics?.map((top) => (
-                  <option>{top}</option>
-                ))
-              }
-            </select>
-            {topic === "Overview" ? 
-            null : (
-              <select className="glow-border" onChange={(e) => handleSubtopic(e.target.value)}>
-              <option value="" selected disabled hidden>Select Subtopic</option>
-  
-                {
-                  subtopics?.map((sub) => (
-                    <option>{sub}</option>
-                  ))
+                <select onChange={(e) => handleTopic(e.target.value)} className="glow-border">
+                    <option selected="selected" >Overview</option>
+                  {
+                    topics?.map((top) => (
+                      <option>{top}</option>
+                    ))
+                  }
+                </select>
+                {topic === "Overview" ? 
+                null : (
+                  <select className="glow-border" onChange={(e) => handleSubtopic(e.target.value)}>
+                  <option value="" selected disabled hidden>Select Subtopic</option>
+      
+                    {
+                      subtopics?.map((sub) => (
+                        <option>{sub}</option>
+                      ))
+                    }
+                  </select>
+                )
                 }
-              </select>
-            )
-            }
             
 
               {/* <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
@@ -172,7 +172,7 @@ const getSubtopics = async (topic) => {
           </div>
             ) : null
           }
-          <div className="sb-table-head">
+          {/* <div className="sb-table-head"> */}
 
           {showStats? <Stats topic={topic} subtopic={subtopic} users={users} showSummary={showSummary}/> : (
             <>
@@ -202,7 +202,7 @@ const getSubtopics = async (topic) => {
               </>
             )
           }
-        </div>
+        {/* </div> */}
         
       </div>
     </div>
