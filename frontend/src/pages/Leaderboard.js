@@ -129,6 +129,18 @@ const getSubtopics = async (topic) => {
     
   }
 
+  const selectTempStyle = {
+    background: "transparent",
+    padding: "1rem",
+    color: "var(--glow-border-color)",
+    fontWeight: "normal",
+    textTransform: "uppercase",
+    textShadow: "0 0 1ex var(--heading-text-color)",
+    backgroundColor: "transparent",
+    font: "var(--fonts-primary)",
+    minWidth: "20rem",
+  }
+
   return (
     // <div>
     // <div className="game-header">
@@ -138,7 +150,7 @@ const getSubtopics = async (topic) => {
           {
             isAuthProf? (
               <div className="toolbar" justify-content="center">
-                <select onChange={(e) => handleTopic(e.target.value)} className="glow-border">
+                <select onChange={(e) => handleTopic(e.target.value)} className="glow-border" style={selectTempStyle}>
                     <option selected="selected" >Overview</option>
                   {
                     topics?.map((top) => (
@@ -148,7 +160,7 @@ const getSubtopics = async (topic) => {
                 </select>
                 {topic === "Overview" ? 
                 null : (
-                  <select className="glow-border" onChange={(e) => handleSubtopic(e.target.value)}>
+                  <select className="glow-border" onChange={(e) => handleSubtopic(e.target.value)} style={selectTempStyle}>
                   <option value="" selected disabled hidden>Select Subtopic</option>
       
                     {
@@ -167,7 +179,7 @@ const getSubtopics = async (topic) => {
                 <h4 onClick={() => handleSubtopic(sub)} className="glow-border"><sb-var data-var="id">{sub}</sb-var></h4>
               ))
               } */}
-              <h2 onClick={handleSummary} className="glow-border"><sb-var data-var="id">Summary</sb-var></h2>            
+              <h2 onClick={handleSummary} className="glow-border" style={{cursor: "pointer"}}><sb-var data-var="id">Summary</sb-var></h2>            
 
           </div>
             ) : null
@@ -185,7 +197,7 @@ const getSubtopics = async (topic) => {
               </div>
               <div className="sb-table-head">
                 <h4>Place</h4>
-                <h4># Tasks</h4>
+                {/* <h4># Tasks</h4> */}
                 <h4 className="sb-spacer">Name</h4>
                 <h4>Score</h4>
               </div>
@@ -193,7 +205,7 @@ const getSubtopics = async (topic) => {
                 (users.length > 0) ? users.map((element, index) => (
                 <div key={`${element.username}-${index}`} data-id="PPP" data-sb="true" data-type="sb-team" data-task-summary="17 tasks" data-tasks="crypto-auth,keys-whisperwhileyouwork,misc-distributed,misc-luckyheart,misc-magic,misc-polyglot,misc-secure-safe-1,misc-secure-safe-2,re-drm,re-elisp,re-flagvm,re-journey,re-yawn,web-blind-xss,web-js-safe-3,web-pwn-gdb-as-a-service,web-quinify" title="Solved tasks: crypto-auth,keys-whisperwhileyouwork,misc-distributed,misc-luckyheart,misc-magic,misc-polyglot,misc-secure-safe-1,misc-secure-safe-2,re-drm,re-elisp,re-flagvm,re-journey,re-yawn,web-blind-xss,web-js-safe-3,web-pwn-gdb-as-a-service,web-quinify" data-last="1540747499507" data-score="3350" data-rank="1" data-top100="true" data-top10="true" style={{"--rank":1}} className="sb-team sb-table-row" data-unsorted="true" data-oldrank="1">
                   <span><sb-var data-var="rank">{index+1}</sb-var></span>
-                  <span><sb-var data-var="taskSummary">17 tasks</sb-var></span>
+                  {/* <span><sb-var data-var="taskSummary">17 tasks</sb-var></span> */}
                   <span><sb-var data-var="id">{element.username}</sb-var></span>
                   <span><sb-var data-var="score">{element.score}</sb-var></span>
                 </div>

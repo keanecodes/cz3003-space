@@ -330,9 +330,9 @@ export default function Topics() {
                         )
                       })}
 
-                      <sb-task-stats>
+                      {/* <sb-task-stats>
                         <h3><sb-var data-var="points">50</sb-var>pt</h3>
-                      </sb-task-stats>
+                      </sb-task-stats> */}
                     </div>
                 ))}
               </div>

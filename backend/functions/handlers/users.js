@@ -59,7 +59,7 @@ exports.register = (req, res) => {
         displayName: newUser.displayName,
         email: newUser.email,
         createdOn: new Date().toISOString(),
-        sprite: "purple",
+        sprite: "pWHT",
         score: 0,
         playerStartX: 330,
         playerStartY: 100,

@@ -5,7 +5,18 @@ export const getWorldsInfoQuestions = async (world) => {
     const topics = (await axios.get("/topics/info")).data
     const topicinfo = {[world]: {...topics[world], subtopics: {}}}
     const subs = await getSubtopics(topics[world]["topic_path"])
-    const diffi = await getSubtopicsDifficulty(topics[world]["topic_path"], subs);
+    let diffi = await getSubtopicsDifficulty(topics[world]["topic_path"], subs);
+    //sort difficulty
+    diffi.map(stopic => {
+      switch(stopic.difficulty[0]) {
+          case 'e': stopic["order"] = '1'; break;
+          case 'm': stopic["order"] = '2'; break;
+          case 'h': stopic["order"] = '3'; break;
+          default:  stopic["order"] = '0'; break;
+      }
+    });
+    diffi.sort((a, b) => a.order.localeCompare(b.order));
+    diffi.map(d => delete d.order)
     diffi.map(d => topicinfo[world].subtopics[d.subtopic] = d.difficulty )
     return topicinfo
   } catch (err) {
