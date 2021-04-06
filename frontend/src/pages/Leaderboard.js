@@ -8,6 +8,7 @@ export default function Leaderboard() {
   const [users, setUsers] = useState([]);
   const [topics, setTopics] = useState([]);
   const [subtopics, setSubtopics] = useState([]);
+  const [topic, setTopic] = useState("");
   const [subtopic, setSubtopic] = useState("");
 
   const [index, setIndex] = useState(0);
@@ -29,10 +30,14 @@ export default function Leaderboard() {
     const top = await getTopics();
     console.log(top[0]);
 
-    const subs = await getSubtopics(top[index]);
-    console.log(subs)
+
+    if(topic.length>0)
+      await getSubtopics(topic);
+    else
+      await getSubtopics(top[0]);
+    // console.log(subs)
   
-}, [index]);
+}, [topic]);
 
 
 
@@ -87,13 +92,9 @@ const getSubtopics = async (topic) => {
     return items;
   }
 
-  const handleTopic = (e) => {
-    e.preventDefault();
+  const handleTopic = (top) => {
 
-    setIndex(index+1);
-    if(index >= 2) {
-      setIndex(0)
-    }
+    setTopic(top);
 
   }
 
@@ -117,12 +118,27 @@ const getSubtopics = async (topic) => {
       <div className="content" role="main" id="teams">
         <div className="sb-table sb-teamlist" data-sort-by="rank" data-unsorted="false">
           <div className="toolbar" justify-content="center">
-              <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
+            <select onChange={(e) => handleTopic(e.target.value)} className="glow-border">
+              {
+                topics?.map((top) => (
+                  <option>{top}</option>
+                ))
+              }
+            </select>
+            <select className="glow-border" onChange={(e) => handleSubtopic(e.target.value)}>
+              {
+                subtopics?.map((sub) => (
+                  <option>{sub}</option>
+                ))
+              }
+            </select>
+
+              {/* <h2 onClick={handleTopic} className="glow-border"><sb-var data-var="id">{topics[index]}</sb-var></h2>
               {
               subtopics.map((sub) => (
                 <h4 onClick={() => handleSubtopic(sub)} className="glow-border"><sb-var data-var="id">{sub}</sb-var></h4>
               ))
-              }
+              } */}
               <h2 onClick={handleSummary} className="glow-border"><sb-var data-var="id">Summary</sb-var></h2>            
 
           </div>
@@ -151,7 +167,7 @@ const getSubtopics = async (topic) => {
           }
         </div>
         <div> 
-            {showStats? <Stats handleShowStats={handleShowStats} topic={topics[index]} subtopic={subtopic} users={users} showSummary={showSummary}/> : null }
+            {showStats? <Stats handleShowStats={handleShowStats} topic={topic} subtopic={subtopic} users={users} showSummary={showSummary}/> : null }
         </div>
       </div>
     // </div>
